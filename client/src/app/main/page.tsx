@@ -12,7 +12,12 @@ export default function Main() {
       </div>
 
       <div className={styles.fixedButton}>
-        <Button>이용하기</Button>
+        <Button
+          text="이용하기"
+          onClick={() => console.log('버튼 클릭')}
+          backgroundColor="red"
+          textColor="white"
+        />
       </div>
     </div>
   );
