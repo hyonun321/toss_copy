@@ -16,7 +16,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
-     "jsxImportSource": "@emotion/react",
     "jsx": "preserve",
     "plugins": [
       {
