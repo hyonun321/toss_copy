@@ -13,7 +13,7 @@ export const StyledButton = styled.button<{
   cursor: pointer;
   background-color: ${({ backgroundColor }) => backgroundColor};
   color: ${({ textColor }) => textColor};
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 500;
   transition:
     transform 0.2s ease,
