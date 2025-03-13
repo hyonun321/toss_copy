@@ -1,3 +1,5 @@
+'use client';
+
 import MainView from './main/page';
 import HomeView from './home/page';
 

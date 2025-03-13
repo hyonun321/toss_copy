@@ -1,4 +1,4 @@
-import React from 'react';
+'use client';
 import styles from '../page.module.css';
 import { Header } from '@/app/components/Header';
 import { Footer } from '@/app/components/Footer';
