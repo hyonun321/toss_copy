@@ -1,10 +1,10 @@
 package com.shop.cafe.dto;
-
-import javax.xml.crypto.Data;
+import java.util.Date;
 
 public class Member {
 	private String email,pwd,nickname;
-	private Data registDate;
+	private Date registDate;
+
 	public String getEmail() {
 		return email;
 	}
@@ -16,6 +16,11 @@ public class Member {
 	public String getPwd() {
 		return pwd;
 	}
+	
+	public Date getRegistDate() {
+		return registDate;
+	}
+
 
 	public Member(String email, String pwd, String nickname) {
 		super();

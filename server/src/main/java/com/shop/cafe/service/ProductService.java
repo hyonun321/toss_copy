@@ -11,7 +11,7 @@ import com.shop.cafe.dto.Product;
 @Service
 public class ProductService {
 	@Autowired
-	ProductDao productDao = new ProductDao();
+	private ProductDao productDao;
 	
 	public List<Product> getAllProducts() throws Exception{
 		return productDao.getAllProducts();
