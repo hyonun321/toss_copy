@@ -27,18 +27,18 @@
 #### ⌛ Developed Period
 ##### 2025.3.13 ~ 2025.3.21 (9 days)
 
-## 🧑‍🦲 팀원(가나다순)
+## 👩‍💻 팀원
 
 <table>
   <tbody>
     <tr>
-      <td align="center"><a href="https://github.com/hyonun321"><img src="https://avatars.githubusercontent.com/u/119800605?v=4" width="100px;" alt=""/><br /><sub><b>김현훈</b></sub></a><br /><sub><b>개발</b></sub></td>
-      <td align="center"><a href="https://github.com/mstagon"><img src="https://avatars.githubusercontent.com/u/83182868?v=4" width="100px;" alt=""/><br /><sub><b>최민석</b></sub></a><br /><sub><b>개발</b></sub></td>
+      <td align="center"><a href="https://github.com/hyonun321"><img src="https://avatars.githubusercontent.com/u/119800605?v=4" width="120px;" alt=""/><br /><b>김현훈</b></a><br /><p>개발</p></td>
+      <td align="center"><a href="https://github.com/mstagon"><img src="https://avatars.githubusercontent.com/u/83182868?v=4" width="120px;" alt=""/><br /><b>최민석</b></a><br /><p>개발</p></td>
     </tr>
   </tbody>
 </table>
 
-## 🎯 Commit Convention
+## 🎯 커밋 컨벤션
 
 - `feat`: Add a new feature
 - `fix`: Bug fix
