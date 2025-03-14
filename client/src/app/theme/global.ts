@@ -32,6 +32,9 @@ export const globalStyle = css`
     vertical-align: baseline;
   }
 
+  html {
+    height: 100%;
+  }
   body {
     line-height: 1.3;
     background-color: '#FFFFFF';
