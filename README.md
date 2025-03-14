@@ -1,9 +1,9 @@
 # 유레카 프론트엔드 비대면 3조
 ## DOSS
 <div align="center">
-<img width="300" alt="logined" src="https://github.com/user-attachments/assets/4dc1b362-7c0e-4b62-b88a-762b20cedf1f"/>
-<img width="300" alt="logined" src="https://github.com/user-attachments/assets/0bfe0ddc-6a03-4404-bae4-2e6a62b563ec" />
-<img width="300" alt="mypage" src="https://github.com/user-attachments/assets/3c88b6c5-ce3d-42f9-ae05-7df5f7d869ab" />
+<img width="250" alt="logined" src="https://github.com/user-attachments/assets/4dc1b362-7c0e-4b62-b88a-762b20cedf1f"/>
+<img width="250" alt="logined" src="https://github.com/user-attachments/assets/0bfe0ddc-6a03-4404-bae4-2e6a62b563ec" />
+<img width="250" alt="mypage" src="https://github.com/user-attachments/assets/3c88b6c5-ce3d-42f9-ae05-7df5f7d869ab" />
 
 </div>
 
