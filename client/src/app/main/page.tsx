@@ -1,18 +1,64 @@
-import React from 'react';
-import Button from '../components/Button';
+'use client';
+import { Button } from '../components/Button/Button';
+import { ViewContainer } from '../components/viewContainer/viewContainer';
 import styles from './page.module.css';
-
+import { ImageText } from '@/app/components/ImageText/ImageText';
 export default function Main() {
   return (
     <div className={styles.container}>
       <div className={styles.scrollArea}>
-        <h1>주식의 모든 것</h1>
-        <h2>도스에서 간편하게</h2>
-        <p>스크롤되는 내용 예시입니다. 원하는 요소들을 여기에 배치하세요.</p>
+        <ViewContainer>
+          <ImageText
+            imageSrc="/images/doss_logo.png"
+            enableAnimation={true}
+            alt="도스 로고"
+            text={
+              <>
+                주식의 모든 것
+                <br />
+                도스에서 간편하게
+              </>
+            }
+          />
+        </ViewContainer>
+        <ViewContainer>
+          <ImageText
+            imageSrc="/images/storage.png"
+            alt="도스 금고"
+            enableAnimation={true}
+            text={
+              <>
+                보고 싶은 주식을
+                <br />
+                마음 껏 담으세요
+              </>
+            }
+          />
+        </ViewContainer>
+        <ViewContainer>
+          <ImageText
+            imageSrc="/images/wallet.png"
+            alt="도스 지갑"
+            enableAnimation={true}
+            text={
+              <>
+                복잡한 검색 없이
+                <br />
+                내주식을 확인해요
+              </>
+            }
+          />
+        </ViewContainer>
       </div>
 
+      {/* TODO: Footer로 속성을 넣어서 정리가능 */}
       <div className={styles.fixedButton}>
-        <Button>이용하기</Button>
+        <Button
+          text="이용하기"
+          onClick={() => console.log('버튼 클릭')}
+          backgroundColor="red"
+          textColor="white"
+        />
       </div>
     </div>
   );
