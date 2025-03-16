@@ -9,7 +9,7 @@ import {
   Rank,
   StockMarker,
   StockName,
-  StockCode,
+  //   StockCode,
   StockInfoContainer,
   Price,
   PriceContainer,
@@ -30,10 +30,10 @@ type StockListItemProps = {
 
 export function StockListItem({
   rank,
-  stockCode,
+  //   stockCode,
   stockName,
   price,
-  change,
+  //   change,
   changePercentage,
   isPositiveChange,
   isFavorite = false,
