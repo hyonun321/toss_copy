@@ -13,6 +13,9 @@ export const theme = {
     black: '#131214',
     blue: '#3182F6',
     gray: '#D9D9D9',
+    littleGray: '#F4F6F7',
     boldGray: '#898D8F',
+    lightGray: '#E6E9EB',
+    darkGray: '#414141',
   },
 };
