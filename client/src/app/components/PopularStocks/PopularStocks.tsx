@@ -12,7 +12,6 @@ import {
   StockChange,
   StockItemButton,
 } from './PopularStocks.style';
-import { theme } from '@/app/theme/theme';
 import { PopularStockItem } from '@/app/types';
 
 interface PopularStocksProps {
