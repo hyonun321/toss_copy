@@ -3,16 +3,16 @@ import styled from '@emotion/styled';
 
 export const TabsContainer = styled.div`
   display: flex;
+  gap: 32px;
   position: relative;
-  width: 100%;
+  width: calc(100% - 32px);
   margin-inline: 16px;
   border-bottom: 1px solid #eee;
 `;
 
 export const Tab = styled.button<{ active: boolean }>`
-  flex: 1;
   padding: 12px 0;
-  text-align: center;
+  text-align: left;
   background: none;
   border: none;
   font-size: 16px;
@@ -22,14 +22,15 @@ export const Tab = styled.button<{ active: boolean }>`
   cursor: pointer;
   position: relative;
   transition: color 0.3s ease;
+  white-space: nowrap;
 `;
 
-export const TabIndicator = styled.div<{ position: number }>`
+export const CustomTabIndicator = styled.div`
   position: absolute;
   bottom: 0;
-  left: ${({ position }) => `${position * 25}%`};
-  width: 25%;
   height: 2px;
   background-color: #000;
-  transition: left 0.3s ease;
+  transition:
+    left 0.3s ease,
+    width 0.3s ease;
 `;
