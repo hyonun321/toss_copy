@@ -19,8 +19,12 @@ export function useLogin({ onSuccess }: UseLoginProps) {
       } else {
         setError('로그인에 실패했습니다.');
       }
-    } catch (error) {
-      setError('로그인에 실패했습니다.');
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('로그인에 실패했습니다.');
+      }
     }
   };
 
@@ -33,7 +37,6 @@ export function useLogin({ onSuccess }: UseLoginProps) {
     login,
   };
 }
-
 
 const fakeLoginAPI = async (email: string, password: string) => {
   return new Promise<{ success: boolean }>((resolve) =>
