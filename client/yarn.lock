@@ -787,6 +787,18 @@
     "@typescript-eslint/types" "8.26.1"
     eslint-visitor-keys "^4.2.0"
 
+"@use-funnel/browser@^0.0.13":
+  version "0.0.13"
+  resolved "https://registry.yarnpkg.com/@use-funnel/browser/-/browser-0.0.13.tgz#db9f287b5f42d9a8ffc8ee6cdb1a74a2b469b97a"
+  integrity sha512-VLqN3FV2MruIN/51X+4vLv/A/81P5Uz4TX/68u8xiar0isUYJJSsyfoA81KF7Q/6tbW15ITpT6fGfxhAeGRESw==
+  dependencies:
+    "@use-funnel/core" "^0.0.10"
+
+"@use-funnel/core@^0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@use-funnel/core/-/core-0.0.10.tgz#9a2e028989761e49aa387497656079550a55750b"
+  integrity sha512-Ppk76LIB0g63YGOm2LzLQHGXYtbFPE0Cd+jiIKndyC/BhLpGUCikzq/JtRc0Xpkntf7AEENFzPBHsjlc96WjRg==
+
 acorn-jsx@^5.3.2:
   version "5.3.2"
   resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-5.3.2.tgz#7ed5bb55908b3b2f1bc55c6af1653bada7f07937"
