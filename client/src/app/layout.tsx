@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="kr">
+    <html lang="ko">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ClientGlobalStyles />
         <ResponsiveWrapper>{children}</ResponsiveWrapper>
