@@ -1,6 +1,14 @@
 import styled from '@emotion/styled';
 import { theme } from '@/app/theme/theme';
 
+export const FavoriteButton = styled.button`
+  background: none;
+  border: none;
+  display: flex;
+  cursor: pointer;
+  padding-right: 24px;
+`;
+
 export const ItemContainer = styled.div`
   display: flex;
   align-items: center;
@@ -11,7 +19,7 @@ export const ItemContainer = styled.div`
     filter 0.15s ease,
     opacity 0.15s ease;
 
-  &:active {
+  &:active:not(:has(${FavoriteButton}:active)) {
     transform: scale(0.97);
     filter: brightness(0.97);
   }
@@ -82,12 +90,4 @@ export const ChangeText = styled.span<{ isPositive: boolean }>`
   font-weight: 400;
   color: ${({ isPositive }) =>
     isPositive ? theme.colors.red : theme.colors.blue};
-`;
-
-export const FavoriteButton = styled.button`
-  background: none;
-  border: none;
-  display: flex;
-  cursor: pointer;
-  padding-right: 24px;
 `;

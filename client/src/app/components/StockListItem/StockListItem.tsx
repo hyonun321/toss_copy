@@ -56,7 +56,11 @@ export function StockListItem({
           </ChangeText>
         </PriceContainer>
       </StockInfoContainer>
-      <FavoriteButton onClick={() => setFavorite(!favorite)}>
+      <FavoriteButton
+        onClick={() => {
+          setFavorite(!favorite);
+        }}
+      >
         {favorite ? (
           <FaHeart color={theme.colors.red} size={20} />
         ) : (
