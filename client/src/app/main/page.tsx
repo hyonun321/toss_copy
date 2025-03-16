@@ -3,7 +3,7 @@ import { Button } from '../components/Button/Button';
 import { ViewContainer } from '../components/viewContainer/viewContainer';
 import styles from './page.module.css';
 import { ImageText } from '@/app/components/ImageText/ImageText';
-export default function Main() {
+export function MainView() {
   return (
     <div className={styles.container}>
       <div className={styles.scrollArea}>
