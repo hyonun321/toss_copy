@@ -10,7 +10,13 @@ import {
   IconContainer,
   IconButton,
 } from './MarketHeader.style';
+import { useRouter } from 'next/navigation';
+
 export function MarketHeader() {
+  const router = useRouter();
+  const handleRouteSearch = () => {
+    router.push('/search');
+  };
   return (
     <HeaderContainer>
       <MarketInfo>
@@ -19,7 +25,7 @@ export function MarketHeader() {
         <MarketChange negative>-4.0%</MarketChange>
       </MarketInfo>
       <IconContainer>
-        <IconButton>
+        <IconButton onClick={handleRouteSearch}>
           <FiSearch size={24} />
         </IconButton>
         <IconButton>
