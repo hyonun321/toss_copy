@@ -50,6 +50,20 @@ public class MemberDao {
             }
         }
     }
+    public int countByEmail(String email) throws Exception {
+        String sql = "SELECT COUNT(*) FROM member WHERE email = ?";
+        try (Connection con = dataSource.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                } else {
+                    return 0;
+                }
+            }
+        }
+    }
 
     public void insertMember(Member m) throws Exception {
         String sql = "insert into member(email, pwd, nickname) values(?,?,?)";

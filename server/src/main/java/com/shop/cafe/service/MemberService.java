@@ -101,10 +101,14 @@ public class MemberService {
 		System.out.println("pwdHash : "+pwdHash);
 	    
 		m.setPwd(pwdHash);
-		int count = memberDao.countByNickname(m.getNickname());
-		    if (count > 0) {
+		int nicknameCount = memberDao.countByNickname(m.getNickname());
+		    if (nicknameCount > 0) {
 		        throw new Exception("이미 존재하는 닉네임입니다.");
 		    }
+		int emailCount = memberDao.countByEmail(m.getEmail());
+	    if (emailCount > 0) {
+	        throw new Exception("이미 가입한 유저입니다.");
+	    }
 		saltDao.insertSalt(new SaltInfo(email, salt));
 		memberDao.insertMember(m);
 	}
