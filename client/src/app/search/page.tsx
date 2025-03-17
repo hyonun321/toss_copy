@@ -1,4 +1,6 @@
 'use client';
-export default function Search() {
-  return <>hi</>;
+import { SearchView } from '@/app/components/SearchView/SearchView';
+
+export default function Page() {
+  return <SearchView />;
 }
