@@ -1,4 +1,5 @@
 HELP.md
+kis_token.dat
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
