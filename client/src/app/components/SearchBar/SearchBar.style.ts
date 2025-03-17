@@ -41,7 +41,7 @@ export const SearchInput = styled.input`
   align-items: center;
   font-size: 16px;
   outline: none;
-  color: ${theme.colors.littleGray};
+  color: ${theme.colors.black};
   &::placeholder {
     color: ${theme.colors.boldGray};
   }
