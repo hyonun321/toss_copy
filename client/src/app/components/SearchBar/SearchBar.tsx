@@ -50,7 +50,7 @@ export function SearchBar({
     }
   };
 
-  const handleBack = () => {
+  const handleRouteBack = () => {
     if (onBack) {
       onBack();
     } else {
@@ -60,7 +60,7 @@ export function SearchBar({
 
   return (
     <SearchBarContainer>
-      <BackButton onClick={handleBack}>
+      <BackButton onClick={handleRouteBack}>
         <FiArrowLeft size={20} />
       </BackButton>
       <SearchInputContainer>

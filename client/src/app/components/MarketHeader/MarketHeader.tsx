@@ -17,6 +17,9 @@ export function MarketHeader() {
   const handleRouteSearch = () => {
     router.push('/search');
   };
+  const handleRouteSetting = () => {
+    router.push('/setting');
+  };
   return (
     <HeaderContainer>
       <MarketInfo>
@@ -28,7 +31,7 @@ export function MarketHeader() {
         <IconButton onClick={handleRouteSearch}>
           <FiSearch size={24} />
         </IconButton>
-        <IconButton>
+        <IconButton onClick={handleRouteSetting}>
           <FiMenu size={24} />
         </IconButton>
       </IconContainer>
