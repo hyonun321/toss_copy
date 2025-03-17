@@ -1,12 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MarketHeader } from '@/app/components/MarketHeader/MarketHeader';
 import { ImageText } from '@/app/components/ImageText/ImageText';
 import { CategoryTabs } from '@/app/components/CategoryTabs/CategoryTabs';
 import { StockListItem } from '@/app/components/StockListItem/StockListItem';
 import { BottomNavigation } from '@/app/components/BottomNavigation/BottomNavigation';
-import { useStockData } from '@/app/hooks/useStockData';
+import { ALL_ENDPOINTS, Endpoint } from '@/app/constants/tabMappings';
+import {
+  CategoryDataType,
+  ApiResponse,
+  TransformedStockItem,
+} from '@/app/types';
 import {
   PageContainer,
   SectionTitle,
@@ -15,74 +20,104 @@ import {
   ErrorMessage,
 } from './HomeView.style';
 
-const fallbackStockData = [
-  {
-    rank: 1,
-    stockCode: 'TSLL',
-    stockName: 'TSLL',
-    price: '11,589원',
-    change: '+7.7%',
-    changePercentage: '+7.7%',
-    isPositiveChange: true,
-    isFavorite: false,
-  },
-  {
-    rank: 2,
-    stockCode: 'TSLA',
-    stockName: '테슬라',
-    price: '337,024원',
-    change: '+4.6%',
-    changePercentage: '+4.6%',
-    isPositiveChange: true,
-    isFavorite: true,
-  },
-  {
-    rank: 3,
-    stockCode: 'TSLQ',
-    stockName: 'TSLQ',
-    price: '93,546원',
-    change: '-1.6%',
-    changePercentage: '-1.6%',
-    isPositiveChange: false,
-    isFavorite: true,
-  },
-  {
-    rank: 4,
-    stockCode: 'SPY',
-    stockName: 'S&P 500',
-    price: '55,116원',
-    change: '-1.6%',
-    changePercentage: '-1.6%',
-    isPositiveChange: false,
-    isFavorite: false,
-  },
-  {
-    rank: 5,
-    stockCode: 'NVDL',
-    stockName: 'NVDL',
-    price: '35,526원',
-    change: '-1.6%',
-    changePercentage: '-1.6%',
-    isPositiveChange: false,
-    isFavorite: true,
-  },
-];
+import {
+  formatPrice,
+  formatChange,
+  formatPercentage,
+} from '@/app/utils/formatters';
+import Image from 'next/image';
 
 export function HomeView() {
-  const [stockType, setStockType] = useState('domestic/trade-value');
-  const { stocks, loading, error } = useStockData(stockType);
+  const [activeTab, setActiveTab] = useState<Endpoint>('domestic/trade-value');
+  const [categoryData, setCategoryData] = useState<CategoryDataType>(
+    ALL_ENDPOINTS.reduce(
+      (acc, endpoint) => ({
+        ...acc,
+        [endpoint]: [],
+      }),
+      {} as CategoryDataType,
+    ),
+  );
+  const [initialLoading, setInitialLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [lastRefreshed, setLastRefreshed] = useState<number>(Date.now());
 
-  const handleTabChange = (tabType) => {
-    console.log('Tab changed to:', tabType);
-    setStockType(tabType);
+  const refreshData = () => {
+    setLastRefreshed(Date.now());
   };
 
+  useEffect(() => {
+    async function fetchAllCategoryData() {
+      setInitialLoading(true);
+      setError(null);
+
+      try {
+        const results = await Promise.all(
+          ALL_ENDPOINTS.map(async (category) => {
+            const response = await fetch(
+              `http://localhost:8080/api/stocks/${category}`,
+            );
+
+            if (!response.ok) {
+              throw new Error(`${category} 데이터를 가져오는 중 오류 발생`);
+            }
+
+            const data: ApiResponse = await response.json();
+            return { category, data };
+          }),
+        );
+
+        const newCategoryData: CategoryDataType = { ...categoryData };
+
+        results.forEach(({ category, data }) => {
+          if (data.resultCode === '0' && Array.isArray(data.stocks)) {
+            const transformedData: TransformedStockItem[] = data.stocks.map(
+              (item, index) => ({
+                rank: index + 1,
+                stockCode: item.code,
+                stockName: item.name,
+                price: formatPrice(item.price.toString()),
+                change: formatChange(item.change),
+                changePercentage: formatPercentage(item.changeRate.toString()),
+                isPositiveChange:
+                  item.isPositiveChange !== undefined
+                    ? item.isPositiveChange
+                    : !item.change.startsWith('-'),
+                isFavorite: false,
+              }),
+            );
+
+            newCategoryData[category as Endpoint] = transformedData;
+          }
+        });
+
+        setCategoryData(newCategoryData);
+      } catch (err) {
+        console.error('데이터 로딩 중 오류 발생:', err);
+        setError(
+          err instanceof Error
+            ? err.message
+            : '알 수 없는 오류가 발생했습니다.',
+        );
+      } finally {
+        setInitialLoading(false);
+      }
+    }
+
+    fetchAllCategoryData();
+  }, [lastRefreshed]);
+
+  const handleTabChange = (tabType: Endpoint) => {
+    setActiveTab(tabType);
+  };
+
+  const currentTabData = categoryData[activeTab] || [];
   const stockListData =
-    loading || error || !stocks.length ? fallbackStockData : stocks;
+    initialLoading || error || !currentTabData.length ? [] : currentTabData;
 
   return (
     <PageContainer>
-      <MarketHeader />
+      <MarketHeader onRefresh={refreshData} />
       <ImageText
         imageSrc="/images/egg.png"
         text={
@@ -95,15 +130,19 @@ export function HomeView() {
       />
       <SectionTitle>실시간 차트</SectionTitle>
 
-      {/* 탭 변경 이벤트 처리 */}
-      <CategoryTabs onTabChange={handleTabChange} activeTab={stockType} />
+      <CategoryTabs onTabChange={handleTabChange} activeTab={activeTab} />
 
-      {/* 로딩 상태 표시 */}
-      {loading && (
-        <LoadingIndicator>데이터를 불러오는 중입니다...</LoadingIndicator>
+      {initialLoading && (
+        <LoadingIndicator>
+          <Image
+            src="/images/loading.gif"
+            alt="데이터를 불러오는 중입니다..."
+            width={50}
+            height={50}
+          />
+        </LoadingIndicator>
       )}
 
-      {/* 오류 상태 표시 */}
       {error && (
         <ErrorMessage>
           데이터를 불러오는 중 오류가 발생했습니다: {error}
