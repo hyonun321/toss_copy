@@ -12,5 +12,7 @@ export const theme = {
     white: '#FFFFFF',
     black: '#131214',
     blue: '#3182F6',
+    gray: '#D9D9D9',
+    boldGray: '#898D8F',
   },
 };

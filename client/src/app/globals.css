@@ -16,6 +16,11 @@ body {
   overflow-x: hidden;
 }
 
+button{
+  padding-block: 0;
+  padding-inline: 0;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);

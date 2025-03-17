@@ -50,6 +50,8 @@ export const globalStyle = css`
     border: 0;
     background: transparent;
     cursor: pointer;
+    padding-block: 0;
+    padding-inline: 0;
   }
 
   a {
