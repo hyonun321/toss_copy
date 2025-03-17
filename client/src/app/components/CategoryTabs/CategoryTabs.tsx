@@ -4,16 +4,45 @@ import { TabsContainer, Tab, CustomTabIndicator } from './CategoryTabs.style';
 
 type TabOption = '거래대금' | '거래량' | '급상승' | '급하락';
 
-export function CategoryTabs() {
-  const [activeTab, setActiveTab] = useState<TabOption>('거래대금');
+interface CategoryTabsProps {
+  onTabChange?: (tabType: string) => void;
+  activeTab?: string;
+}
+
+export function CategoryTabs({
+  onTabChange,
+  activeTab = 'domestic/trade-value',
+}: CategoryTabsProps) {
+  const getInitialTab = () => {
+    const endpointToTab = {
+      'domestic/trade-value': '거래대금',
+      'domestic/volume': '거래량',
+      'domestic/rising': '급상승',
+      'domestic/falling': '급하락',
+    };
+
+    return endpointToTab[activeTab] || '거래대금';
+  };
+
+  // 내부 상태와 외부 상태 동기화
+  const [activeTabState, setActiveTabState] =
+    useState<TabOption>(getInitialTab());
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const tabs: TabOption[] = ['거래대금', '거래량', '급상승', '급하락'];
 
+  // 탭 매핑 (UI 표시용 탭 -> API 요청용 타입)
+  const tabTypeMapping = {
+    거래대금: 'domestic/trade-value',
+    거래량: 'domestic/volume',
+    급상승: 'domestic/rising',
+    급하락: 'domestic/falling',
+  };
+
   useLayoutEffect(() => {
     const updateIndicator = () => {
-      const activeTabIndex = tabs.indexOf(activeTab);
+      const activeTabIndex = tabs.indexOf(activeTabState);
       const activeTabElement = tabRefs.current[activeTabIndex];
 
       if (activeTabElement) {
@@ -39,7 +68,16 @@ export function CategoryTabs() {
 
     window.addEventListener('resize', updateIndicator);
     return () => window.removeEventListener('resize', updateIndicator);
-  }, [activeTab, tabs]);
+  }, [activeTabState, tabs]);
+
+  const handleTabClick = (tab: TabOption) => {
+    setActiveTabState(tab);
+
+    // 상위 컴포넌트에 탭 변경 알림
+    if (onTabChange) {
+      onTabChange(tabTypeMapping[tab]);
+    }
+  };
 
   return (
     <TabsContainer>
@@ -49,8 +87,8 @@ export function CategoryTabs() {
           ref={(el) => {
             tabRefs.current[index] = el;
           }}
-          active={activeTab === tab}
-          onClick={() => setActiveTab(tab)}
+          active={activeTabState === tab}
+          onClick={() => handleTabClick(tab)}
         >
           {tab}
         </Tab>
