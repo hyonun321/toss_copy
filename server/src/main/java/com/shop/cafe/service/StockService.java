@@ -31,7 +31,7 @@ public class StockService {
     // 국내 주식 정보 조회
     public List<StockInfo> getDomesticStocks() {
         if (needsRefresh(stockDao.getDomesticLastUpdated())) {
-            refreshDomesticStocks();
+        	refreshDomesticStocks();
         }
         return stockDao.getDomesticStocks();
     }
@@ -40,7 +40,7 @@ public class StockService {
     public List<StockInfo> getOverseasStocks() {
         // 캐시된 데이터가 없거나 오래된 경우 갱신
         if (needsRefresh(stockDao.getOverseasLastUpdated())) {
-            refreshOverseasStocks();
+        	refreshOverseasStocks();
         }
         return stockDao.getOverseasStocks();
     }
@@ -61,6 +61,7 @@ public class StockService {
     // 국내 주식 거래대금 상위 종목 조회
     public List<StockInfo> getDomesticTradeValueRanking() {
         if (needsRefresh(stockDao.getLastUpdated("domestic_trade_value"))) {
+        	System.out.println("거래대금 상위종목 또 갯인한다" + stockDao.getLastUpdated("domestic_trade_value"));
             refreshDomesticTradeValueRanking();
         }
         return stockDao.getStocks("domestic_trade_value");

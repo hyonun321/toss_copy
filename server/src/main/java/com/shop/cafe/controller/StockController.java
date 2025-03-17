@@ -25,7 +25,6 @@ public class StockController {
     @GetMapping("/domestic")
     public ResponseEntity<StockApiResponse> getDomesticStocks() {
         List<StockInfo> stocks = stockService.getDomesticStocks();
-        System.out.println("국내주식:"+ stocks);
         StockApiResponse response = new StockApiResponse("0", "성공", stocks);
         return ResponseEntity.ok(response);
     }
@@ -34,7 +33,6 @@ public class StockController {
     @GetMapping("/overseas")
     public ResponseEntity<StockApiResponse> getOverseasStocks() {
         List<StockInfo> stocks = stockService.getOverseasStocks();
-        System.out.println("해외주식:"+stocks);
         StockApiResponse response = new StockApiResponse("0", "성공", stocks);
         return ResponseEntity.ok(response);
     }
