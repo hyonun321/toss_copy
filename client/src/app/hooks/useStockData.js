@@ -1,6 +1,9 @@
-// hooks/useStockData.js
 import { useState, useEffect } from 'react';
-
+import {
+  formatPrice,
+  formatChange,
+  formatPercentage,
+} from '../utils/formatters';
 export function useStockData(stockType = 'domestic/trade-value') {
   const [stocks, setStocks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -60,42 +63,6 @@ export function useStockData(stockType = 'domestic/trade-value') {
 
     fetchStocks();
   }, [stockType]);
-
-  const formatPrice = (price) => {
-    if (!price) return '0원';
-
-    const numericPrice = price.replace(/[^\d.-]/g, '');
-
-    const formattedPrice = parseInt(numericPrice).toLocaleString();
-
-    return `${formattedPrice}원`;
-  };
-
-  const formatChange = (change) => {
-    if (!change) return '0';
-
-    if (change.startsWith('+') || change.startsWith('-')) {
-      return change;
-    }
-
-    const numericChange = parseFloat(change);
-    return numericChange >= 0 ? `+${change}` : change;
-  };
-
-  const formatPercentage = (percentage) => {
-    if (!percentage) return '0%';
-
-    let cleanPercentage = percentage.replace(/%/g, '');
-
-    if (cleanPercentage.startsWith('+') || cleanPercentage.startsWith('-')) {
-      return `${cleanPercentage}%`;
-    }
-
-    const numericPercentage = parseFloat(cleanPercentage);
-    return numericPercentage >= 0
-      ? `+${cleanPercentage}%`
-      : `${cleanPercentage}%`;
-  };
 
   return { stocks, loading, error };
 }
