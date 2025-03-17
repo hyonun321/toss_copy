@@ -1,48 +1,42 @@
 'use client';
-import { useState, useRef, useLayoutEffect } from 'react';
+import { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { TabsContainer, Tab, CustomTabIndicator } from './CategoryTabs.style';
+import {
+  TAB_OPTIONS,
+  TAB_TO_ENDPOINT,
+  ENDPOINT_TO_TAB,
+  Endpoint,
+} from '@/app/constants/tabMappings';
 
 type TabOption = '거래대금' | '거래량' | '급상승' | '급하락';
 
 interface CategoryTabsProps {
-  onTabChange?: (tabType: string) => void;
-  activeTab?: string;
+  onTabChange?: (tabType: Endpoint) => void;
+  activeTab?: Endpoint;
 }
 
 export function CategoryTabs({
   onTabChange,
   activeTab = 'domestic/trade-value',
 }: CategoryTabsProps) {
-  const getInitialTab = () => {
-    const endpointToTab = {
-      'domestic/trade-value': '거래대금',
-      'domestic/volume': '거래량',
-      'domestic/rising': '급상승',
-      'domestic/falling': '급하락',
-    };
-
-    return endpointToTab[activeTab] || '거래대금';
-  };
-
   // 내부 상태와 외부 상태 동기화
-  const [activeTabState, setActiveTabState] =
-    useState<TabOption>(getInitialTab());
+  const [activeTabState, setActiveTabState] = useState<TabOption>(
+    ENDPOINT_TO_TAB[activeTab] || '거래대금',
+  );
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-  const tabs: TabOption[] = ['거래대금', '거래량', '급상승', '급하락'];
-
-  // 탭 매핑 (UI 표시용 탭 -> API 요청용 타입)
-  const tabTypeMapping = {
-    거래대금: 'domestic/trade-value',
-    거래량: 'domestic/volume',
-    급상승: 'domestic/rising',
-    급하락: 'domestic/falling',
-  };
+  // 외부 activeTab 변경 시 내부 상태 업데이트
+  useEffect(() => {
+    const mappedTab = ENDPOINT_TO_TAB[activeTab];
+    if (mappedTab && mappedTab !== activeTabState) {
+      setActiveTabState(mappedTab as TabOption);
+    }
+  }, [activeTab, activeTabState]);
 
   useLayoutEffect(() => {
     const updateIndicator = () => {
-      const activeTabIndex = tabs.indexOf(activeTabState);
+      const activeTabIndex = TAB_OPTIONS.indexOf(activeTabState);
       const activeTabElement = tabRefs.current[activeTabIndex];
 
       if (activeTabElement) {
@@ -68,27 +62,27 @@ export function CategoryTabs({
 
     window.addEventListener('resize', updateIndicator);
     return () => window.removeEventListener('resize', updateIndicator);
-  }, [activeTabState, tabs]);
+  }, [activeTabState]);
 
   const handleTabClick = (tab: TabOption) => {
     setActiveTabState(tab);
 
     // 상위 컴포넌트에 탭 변경 알림
     if (onTabChange) {
-      onTabChange(tabTypeMapping[tab]);
+      onTabChange(TAB_TO_ENDPOINT[tab]);
     }
   };
 
   return (
     <TabsContainer>
-      {tabs.map((tab, index) => (
+      {TAB_OPTIONS.map((tab, index) => (
         <Tab
           key={tab}
           ref={(el) => {
             tabRefs.current[index] = el;
           }}
           active={activeTabState === tab}
-          onClick={() => handleTabClick(tab)}
+          onClick={() => handleTabClick(tab as TabOption)}
         >
           {tab}
         </Tab>
