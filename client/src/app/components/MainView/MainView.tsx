@@ -3,7 +3,9 @@ import { Button } from '../Button/Button';
 import { ViewContainer } from '../viewContainer/viewContainer';
 import styles from './MainView.module.css';
 import { ImageText } from '@/app/components/ImageText/ImageText';
+import { useRouter } from 'next/navigation';
 export function MainView() {
+  const router = useRouter();
   return (
     <div className={styles.container}>
       <div className={styles.scrollArea}>
@@ -55,7 +57,7 @@ export function MainView() {
       <div className={styles.fixedButton}>
         <Button
           text="이용하기"
-          onClick={() => console.log('버튼 클릭')}
+          onClick={() => router.push('/loginbegin')}
           backgroundColor="red"
           textColor="white"
         />

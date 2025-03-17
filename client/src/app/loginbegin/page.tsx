@@ -5,11 +5,16 @@ import Title from '@/app/components/Title/Title';
 import { ImageText } from '@/app/components/ImageText/ImageText';
 import { Button } from '@/app/components/Button/Button';
 import { AuthHeader } from '@/app/components/AuthHeader/AuthHeader';
-
+import { useRouter } from 'next/navigation';
 export default function Home() {
+  const router = useRouter();
+  const handleRouteBack = () => {
+    router.push('/main');
+  };
+
   return (
     <div className={styles.container}>
-      <AuthHeader></AuthHeader>
+      <AuthHeader onActionClick={handleRouteBack} />
       <main className={styles.main}>
         <Title>
           도스를 시작하려면
@@ -26,7 +31,7 @@ export default function Home() {
       <footer className={styles.footer}>
         <Button
           text="로그인"
-          onClick={() => console.log('버튼 클릭')}
+          onClick={() => router.push('/login')}
           backgroundColor="red"
           textColor="white"
         />

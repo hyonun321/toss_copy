@@ -6,11 +6,14 @@ import { Button } from '@/app/components/Button/Button';
 import { InputField } from '@/app/components/TextField/InputField';
 import { AuthHeader } from '@/app/components/AuthHeader/AuthHeader';
 import { useLogin } from '@/app/hooks/useLogin';
+import { useRouter } from 'next/navigation';
 
 export default function AuthPage() {
   const [resizeHeight, setResizeHeight] = useState<number>(0);
+
+  const router = useRouter();
   const { email, setEmail, password, setPassword, error, login } = useLogin({
-    onSuccess: () => alert('로그인 성공!'),
+    onSuccess: () => router.push('/home'),
   });
 
   useEffect(() => {
@@ -26,9 +29,17 @@ export default function AuthPage() {
     };
   }, []);
 
+  const handleRouteBack = () => {
+    router.push('/loginbegin');
+  };
+
+  const handleRouteSignUp = () => {
+    router.push('/signup');
+  };
+
   return (
     <div className={styles.container}>
-      <AuthHeader title="로그인" />
+      <AuthHeader title="로그인" onActionClick={handleRouteBack} />
 
       <div className={styles.inputContainer}>
         <InputField
@@ -58,7 +69,7 @@ export default function AuthPage() {
         />
         <Button
           text="회원가입"
-          onClick={() => alert('회원가입 페이지로 이동')}
+          onClick={handleRouteSignUp}
           backgroundColor="red"
           textColor="white"
         />
