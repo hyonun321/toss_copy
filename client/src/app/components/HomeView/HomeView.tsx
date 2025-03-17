@@ -15,7 +15,6 @@ import {
   ErrorMessage,
 } from './HomeView.style';
 
-// Fallback data for when the API is loading or encounters an error
 const fallbackStockData = [
   {
     rank: 1,
@@ -70,7 +69,6 @@ const fallbackStockData = [
 ];
 
 export function HomeView() {
-  // Initialize with trade-value (거래대금) as the default tab
   const [stockType, setStockType] = useState('domestic/trade-value');
   const { stocks, loading, error } = useStockData(stockType);
 
@@ -79,7 +77,6 @@ export function HomeView() {
     setStockType(tabType);
   };
 
-  // Use real data if available, fallback data otherwise
   const stockListData =
     loading || error || !stocks.length ? fallbackStockData : stocks;
 
