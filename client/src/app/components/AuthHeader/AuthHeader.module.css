@@ -1,17 +1,16 @@
 /* styles/AuthHeader.module.css */
 .header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
 }
 
 .backButton {
-    position: absolute;
-    left: 20px;
-
+  position: absolute;
+  left: 20px;
 }
 
 .label {
-    font-size: 20px;
+  font-size: 20px;
 }
