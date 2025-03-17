@@ -21,6 +21,7 @@ export const StockListContainer = styled.div`
 
 // 로딩 인디케이터 스타일
 export const LoadingIndicator = styled.div`
+  margin-top: 96px;
   padding: 20px;
   text-align: center;
   color: #666;
