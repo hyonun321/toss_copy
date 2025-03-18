@@ -1,4 +1,3 @@
-// src/app/data/dummyStocks.ts
 import { BaseStock } from '../types/stock';
 
 export const dummyStocks: BaseStock[] = [
