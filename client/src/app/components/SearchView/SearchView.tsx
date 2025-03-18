@@ -82,14 +82,25 @@ export function SearchView() {
   const handleStockSelect = (stock: BaseStock) => {
     console.log('선택한 주식:', stock);
     const searchTerm = stock.name;
-
-    // 현재 쿼리 상태 업데이트 - 이것이 검색 결과와 SearchBar 표시에 영향
-    setCurrentQuery(searchTerm);
-
     // 검색 히스토리에 추가
     if (!searchHistory.includes(searchTerm)) {
       setSearchHistory((prev) => [searchTerm, ...prev]);
     }
+  };
+
+  // 태그(검색 히스토리) 클릭 처리
+  const handleTagClick = (tag: string) => {
+    console.log('선택한 태그:', tag);
+
+    // 현재 쿼리 상태 업데이트
+    setCurrentQuery(tag);
+
+    // 이미 히스토리에 있는 항목이므로 별도 추가는 불필요
+  };
+
+  // 태그 삭제 처리
+  const handleTagRemove = (tag: string) => {
+    setSearchHistory((prev) => prev.filter((item) => item !== tag));
   };
 
   return (
@@ -110,7 +121,11 @@ export function SearchView() {
           />
         ) : (
           <>
-            <SearchTags />
+            <SearchTags
+              initialTags={searchHistory} // 실제 검색 히스토리 사용
+              onTagClick={handleTagClick} // 태그 클릭 이벤트 핸들러 추가
+              onTagRemove={handleTagRemove} // 태그 삭제 이벤트 핸들러 추가
+            />
             <PopularStocks
               stocks={popularStocks}
               loading={loading}

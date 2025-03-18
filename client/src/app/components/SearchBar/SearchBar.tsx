@@ -17,6 +17,8 @@ interface SearchBarProps {
   onBack?: () => void;
   placeholder?: string;
   onQueryChange?: (query: string) => void; // 새로운 prop 추가
+  initialQuery?: string; // 추가: 외부에서 초기 쿼리 값을 받을 수 있음
+  value?: string; // 추가: 외부에서 제어할 값
 }
 
 export function SearchBar({
@@ -24,10 +26,19 @@ export function SearchBar({
   onBack,
   placeholder = 'LG유플러스를 검색하세요',
   onQueryChange,
+  initialQuery = '', // 기본값 설정
+  value,
 }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  // 외부에서 value가 변경되면 내부 state 업데이트
+  useEffect(() => {
+    if (value !== undefined) {
+      setQuery(value);
+    }
+  }, [value, initialQuery]);
 
   useEffect(() => {
     if (inputRef.current) {

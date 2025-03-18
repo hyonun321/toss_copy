@@ -11,11 +11,13 @@ import {
 interface SearchTagsProps {
   initialTags?: string[];
   onTagRemove?: (tag: string) => void;
+  onTagClick?: (tag: string) => void; // 새로운 prop: 태그 클릭 이벤트
 }
 
 export function SearchTags({
-  initialTags = ['SK하이닉스', '삼성', '네이버'],
+  initialTags = [],
   onTagRemove,
+  onTagClick,
 }: SearchTagsProps) {
   const [tags, setTags] = useState(initialTags);
 
@@ -27,13 +29,32 @@ export function SearchTags({
     }
   };
 
+  // 태그 클릭 핸들러
+  const handleTagClick = (tag: string, event: React.MouseEvent) => {
+    // 삭제 버튼을 클릭한 경우 태그 클릭 이벤트 방지
+    if ((event.target as HTMLElement).closest('.remove-tag-button')) {
+      return;
+    }
+
+    if (onTagClick) {
+      onTagClick(tag);
+    }
+  };
+
   return (
     <TagsContainer>
       {tags.length > 0 ? (
         tags.map((tag) => (
-          <Tag key={tag}>
+          <Tag
+            key={tag}
+            onClick={(e) => handleTagClick(tag, e)}
+            style={{ cursor: 'pointer' }} // 클릭 가능함을 시각적으로 표시
+          >
             {tag}
-            <RemoveTagButton onClick={() => handleRemoveTag(tag)}>
+            <RemoveTagButton
+              className="remove-tag-button"
+              onClick={() => handleRemoveTag(tag)}
+            >
               <FiX size={14} />
             </RemoveTagButton>
           </Tag>
