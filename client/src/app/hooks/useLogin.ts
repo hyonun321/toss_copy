@@ -53,12 +53,10 @@ export function useLogin({ onSuccess }: UseLoginProps) {
       const data: LoginResponse = await response.json();
       console.log(data);
       if (data.Authorization && data.nickname) {
-        // Store token and user info for future authenticated requests
-        localStorage.setItem('authToken', data.Authorization);
-        localStorage.setItem('nickname', data.nickname);
+        sessionStorage.setItem('authToken', data.Authorization);
+        sessionStorage.setItem('nickname', data.nickname);
         onSuccess();
       } else {
-        // The backend returns a msg property on error
         setError(data.msg || '로그인에 실패했습니다.');
       }
     } catch (err) {
