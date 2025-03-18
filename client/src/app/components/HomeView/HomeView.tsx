@@ -41,7 +41,8 @@ export function HomeView() {
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<number>(Date.now());
-  const nickname = sessionStorage.getItem('nickname');
+  const nickname =
+    typeof window !== 'undefined' ? sessionStorage.getItem('nickname') : null;
   const refreshData = () => {
     setLastRefreshed(Date.now());
   };
@@ -105,7 +106,7 @@ export function HomeView() {
     }
 
     fetchAllCategoryData();
-  }, [lastRefreshed]);
+  }, [lastRefreshed, categoryData]);
 
   const handleTabChange = (tabType: Endpoint) => {
     setActiveTab(tabType);

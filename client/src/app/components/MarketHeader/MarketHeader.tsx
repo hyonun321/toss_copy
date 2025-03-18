@@ -17,6 +17,7 @@ interface MarketHeaderProps {
 }
 
 export function MarketHeader(onRefresh: MarketHeaderProps) {
+  console.log(onRefresh);
   const router = useRouter();
   const handleRouteSearch = () => {
     router.push('/search');
