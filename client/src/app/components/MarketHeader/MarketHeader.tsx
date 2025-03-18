@@ -12,8 +12,16 @@ import {
 } from './MarketHeader.style';
 import { useRouter } from 'next/navigation';
 
-export function MarketHeader() {
+interface MarketHeaderProps {
+  onRefresh: () => void;
+}
+
+export function MarketHeader(onRefresh: MarketHeaderProps) {
   const router = useRouter();
+  console.log(
+    onRefresh,
+    '추후에 주식정보 실시간으로 불러와서 롤링컴포넌트 사용할 예정',
+  );
   const handleRouteSearch = () => {
     router.push('/search');
   };
