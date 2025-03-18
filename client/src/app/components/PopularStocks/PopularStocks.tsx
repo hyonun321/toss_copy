@@ -16,6 +16,7 @@ import { BaseStock } from '@/app/types/stock';
 
 interface PopularStocksProps {
   stocks?: BaseStock[];
+  loading?: boolean;
   onStockClick?: (stock: BaseStock) => void;
 }
 
@@ -63,12 +64,14 @@ export function PopularStocks({ stocks, onStockClick }: PopularStocksProps) {
       isPositive: true,
     },
   ];
+  const nowTime = new Date();
+  const formattedTime = `${String(nowTime.getHours()).padStart(2, '0')}:${String(nowTime.getMinutes()).padStart(2, '0')}`;
 
   return (
     <StocksContainer>
       <StockListHeader>
         <ListTitle>인기 주식</ListTitle>
-        <UpdateTime>오늘 18:49 기준</UpdateTime>
+        <UpdateTime>오늘 {formattedTime} 기준</UpdateTime>
       </StockListHeader>
       <StockList>
         {displayStocks.map((stock) => (
@@ -79,7 +82,7 @@ export function PopularStocks({ stocks, onStockClick }: PopularStocksProps) {
               <StockRank>{stock.rank}</StockRank>
               <StockName>{stock.name}</StockName>
               <StockChange isPositive={stock.isPositive || false}>
-                {stock.change}
+                {stock.changePercent}%
               </StockChange>
             </StockItemButton>
           </StockItem>
