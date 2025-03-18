@@ -7,7 +7,7 @@ import { SearchResults } from '@/app/components/searchResults/SearchResults';
 import { SearchViewContainer, SearchContent } from './SearchView.style';
 import { dummyStocks } from '@/app/data/dummyStocks';
 import { BaseStock } from '@/app/types/stock';
-import { fetchPopularStocks } from './stockApi';
+import { fetchPopularStocks, searchStocks } from './stockApi';
 
 export function SearchView() {
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
@@ -72,6 +72,7 @@ export function SearchView() {
       setSearchHistory((prev) => [query, ...prev]);
     }
     console.log('검색어:', query);
+    console.log(searchStocks(query));
     // 전체 검색 실행 (예: 다른 페이지로 이동)
   };
 
