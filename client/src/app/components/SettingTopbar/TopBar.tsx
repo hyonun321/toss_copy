@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import styles from './TopBar.module.css';
+import styles from './TobBar.module.css';
 
 export const TopBar = () => {
   return (
