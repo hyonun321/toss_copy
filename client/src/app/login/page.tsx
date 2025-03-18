@@ -34,7 +34,7 @@ export default function AuthPage() {
   };
 
   const handleRouteSignUp = () => {
-    router.push('/signup');
+    router.push('/register');
   };
 
   return (
@@ -54,6 +54,7 @@ export default function AuthPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        {/* TODO : 에러 메세지 등장 컴포넌트  */}
         {error && <p className={styles.errorMessage}>{error}</p>}
       </div>
 

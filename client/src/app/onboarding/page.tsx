@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ImageText } from '@/app/components/ImageText/ImageText';
@@ -44,9 +44,9 @@ export default function Onboarding() {
   const [step, setStep] = useState(0);
   const router = useRouter();
 
-  const handleRoute = () => {
-    router.push('/main');
-  };
+  const handleRoute = useCallback(() => {
+    router.push('/');
+  }, [router]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -70,7 +70,7 @@ export default function Onboarding() {
 
       return () => clearTimeout(timeout);
     }
-  }, [step]);
+  }, [step, handleRoute]);
 
   return (
     <div className={styles.container}>
@@ -83,7 +83,11 @@ export default function Onboarding() {
           transition={{ duration: 0.5, ease: 'easeInOut' }}
           className={styles.slide}
         >
-          <ImageText imageSrc={steps[step].imageSrc} text={steps[step].text} enableAnimation = {false}  />
+          <ImageText
+            imageSrc={steps[step].imageSrc}
+            text={steps[step].text}
+            enableAnimation={false}
+          />
         </motion.div>
       </AnimatePresence>
     </div>

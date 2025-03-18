@@ -62,5 +62,4 @@ public class MemberDao {
             System.out.println(i + "행이 insert되었습니다");
         }
     }
-    // 나머지 메서드도 같은 방식으로 수정
 }
