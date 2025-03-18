@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { TopBar } from '@/app/components/SettingTopbar/TopBar';
 import { UserInfo } from '@/app/components/UserInfo/UserInfo';
 import { Option } from '@/app/components/Option/Option';
@@ -18,8 +18,8 @@ const SettingPage = () => {
         <Option
           iconSrc="/images/moon.png"
           label="다크 모드"
-          hasToggle={true}
-          onToggleChange={() => console.log('다크모드')}
+          hasToggle
+          //onToggleChange={() => console.log('다크모드')}
         />
         <Option
           iconSrc="/images/user.png"
