@@ -9,9 +9,11 @@
   	select * from login where token=#{token}
   </select>
   
-  <insert id="insertToken" parameterType="Login">
-  	insert into login(email, token) values(#{email},#{token})
-  </insert>
+<insert id="insertToken" parameterType="Login">
+    INSERT INTO login(email, token) 
+    VALUES(#{email}, #{token}) 
+    ON DUPLICATE KEY UPDATE token = #{token}
+</insert>
   
   <delete id="deleteToken" parameterType="String">
   	delete from login where token=#{token}
