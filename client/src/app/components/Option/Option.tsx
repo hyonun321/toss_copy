@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import Image from 'next/image';
 import styles from './Option.module.css';
@@ -24,7 +22,9 @@ export const Option = ({
   const handleToggle = () => {
     const newState = !isActive;
     setIsActive(newState);
-    onToggleChange?.(newState);
+    if (onToggleChange) {
+      onToggleChange(newState);
+    }
   };
 
   return (

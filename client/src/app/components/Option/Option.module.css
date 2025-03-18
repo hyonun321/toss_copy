@@ -2,8 +2,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 16px;
-    cursor: pointer;
+    width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
 }
 
 .optionContent {
@@ -21,20 +22,33 @@
     font-size: 16px;
 }
 
-.toggleSwitch {
+.toggle {
     width: 56px;
     height: 32px;
-    background-color: #e6e9eb;
     border-radius: 32px;
+    background-color: #e6e9eb;
     position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+}
+
+.toggle.active {
+    background-color: #4caf50;
 }
 
 .knob {
-    width: 28px;
-    height: 28px;
-    background-color: #fff;
-    border-radius: 50%;
     position: absolute;
     top: 2px;
     left: 2px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: white;
+    transition: transform 0.3s ease-in-out;
+}
+
+.toggle.active .knob {
+    transform: translateX(24px);
 }
