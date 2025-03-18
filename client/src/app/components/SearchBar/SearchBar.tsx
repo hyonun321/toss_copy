@@ -11,20 +11,24 @@ import {
 } from './SearchBar.style';
 import { useRouter } from 'next/navigation';
 import { theme } from '@/app/theme/theme';
+
 interface SearchBarProps {
   onSearch?: (query: string) => void;
   onBack?: () => void;
   placeholder?: string;
+  onQueryChange?: (query: string) => void; // 새로운 prop 추가
 }
 
 export function SearchBar({
   onSearch,
   onBack,
   placeholder = 'LG유플러스를 검색하세요',
+  onQueryChange,
 }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
@@ -41,6 +45,21 @@ export function SearchBar({
     setQuery('');
     if (inputRef.current) {
       inputRef.current.focus();
+    }
+
+    // 검색어 지울 때 상위 컴포넌트에 알림
+    if (onQueryChange) {
+      onQueryChange('');
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newQuery = e.target.value;
+    setQuery(newQuery);
+
+    // 입력 변경 시 상위 컴포넌트에 알림
+    if (onQueryChange) {
+      onQueryChange(newQuery);
     }
   };
 
@@ -71,7 +90,7 @@ export function SearchBar({
           ref={inputRef}
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
         />
