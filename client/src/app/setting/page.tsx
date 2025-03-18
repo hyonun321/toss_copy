@@ -1,8 +1,8 @@
 'use client';
 
-import TopBar from '@/app/components/SettingTopbar/TopBar';
-import UserInfo from '@/app/components/UserInfo/UserInfo';
-import Option from '@/app/components/Option/Option';
+import { TopBar } from '@/app/components/SettingTopbar/TopBar';
+import { UserInfo } from '@/app/components/UserInfo/UserInfo';
+import { Option } from '@/app/components/Option/Option';
 import styles from './page.module.css';
 
 const SettingPage = () => {
