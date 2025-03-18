@@ -12,7 +12,7 @@ interface OptionProps {
   onToggleChange?: (isActive: boolean) => void;
 }
 
-const Option = ({
+export const Option = ({
   iconSrc,
   label,
   hasToggle,
@@ -59,5 +59,3 @@ const Option = ({
     </div>
   );
 };
-
-export default Option;

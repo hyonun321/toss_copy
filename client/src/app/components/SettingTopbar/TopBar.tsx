@@ -1,7 +1,7 @@
 import Image from 'next/image';
-import styles from './TobBar.module.css';
+import styles from './TopBar.module.css';
 
-const TopBar = () => {
+export const TopBar = () => {
   return (
     <div className={styles.topBar}>
       <Image
@@ -15,5 +15,3 @@ const TopBar = () => {
     </div>
   );
 };
-
-export default TopBar;

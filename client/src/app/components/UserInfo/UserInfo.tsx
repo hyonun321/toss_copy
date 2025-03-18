@@ -1,7 +1,12 @@
 import Image from 'next/image';
 import styles from './UserInfo.module.css';
 
-const UserInfo = ({ username, email }: { username: string; email: string }) => {
+interface UserInfoProps {
+  username: string;
+  email: string;
+}
+
+export const UserInfo = ({ username, email }: UserInfoProps) => {
   return (
     <div className={styles.userInfoContainer}>
       <Image
@@ -18,5 +23,3 @@ const UserInfo = ({ username, email }: { username: string; email: string }) => {
     </div>
   );
 };
-
-export default UserInfo;
