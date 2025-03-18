@@ -83,7 +83,7 @@ export default function Onboarding() {
           transition={{ duration: 0.5, ease: 'easeInOut' }}
           className={styles.slide}
         >
-          <ImageText imageSrc={steps[step].imageSrc} text={steps[step].text} />
+          <ImageText imageSrc={steps[step].imageSrc} text={steps[step].text} enableAnimation = {false}  />
         </motion.div>
       </AnimatePresence>
     </div>
