@@ -7,11 +7,46 @@ import { SearchResults } from '@/app/components/searchResults/SearchResults';
 import { SearchViewContainer, SearchContent } from './SearchView.style';
 import { dummyStocks } from '@/app/data/dummyStocks';
 import { BaseStock } from '@/app/types/stock';
+import { fetchPopularStocks } from './stockApi';
 
 export function SearchView() {
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [currentQuery, setCurrentQuery] = useState('');
   const [searchResults, setSearchResults] = useState<BaseStock[]>([]);
+  const [popularStocks, setPopularStocks] = useState<BaseStock[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // 인기 주식 데이터 가져오기
+  useEffect(() => {
+    const getPopularStocks = async () => {
+      try {
+        setLoading(true);
+        const stocks = await fetchPopularStocks();
+
+        // API 응답을 BaseStock 형태로 변환
+        const formattedStocks: BaseStock[] = stocks.map((stock: any) => ({
+          id: stock.code,
+          symbol: stock.code,
+          name: stock.name,
+          price: stock.price,
+          change: stock.change,
+          changePercent: parseFloat(stock.changeRate),
+          isPositive: stock.positiveChange,
+          rank: stock.rank,
+          logoType: 'normal', // 기본값, 필요에 따라 조정
+          country: 'kr',
+        }));
+
+        setPopularStocks(formattedStocks);
+      } catch (error) {
+        console.error('인기 주식 로드 실패:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getPopularStocks();
+  }, []);
 
   // 디바운싱을 위한 상태
   useEffect(() => {
@@ -46,7 +81,15 @@ export function SearchView() {
 
   const handleStockSelect = (stock: BaseStock) => {
     console.log('선택한 주식:', stock);
-    // 주식 상세 페이지로 이동하는 로직
+    const searchTerm = stock.name;
+
+    // 현재 쿼리 상태 업데이트 - 이것이 검색 결과와 SearchBar 표시에 영향
+    setCurrentQuery(searchTerm);
+
+    // 검색 히스토리에 추가
+    if (!searchHistory.includes(searchTerm)) {
+      setSearchHistory((prev) => [searchTerm, ...prev]);
+    }
   };
 
   return (
@@ -56,6 +99,7 @@ export function SearchView() {
           onSearch={handleSearch}
           placeholder="LG유플러스를 검색하세요"
           onQueryChange={handleQueryChange}
+          value={currentQuery}
         />
 
         {currentQuery.trim() ? (
@@ -68,9 +112,8 @@ export function SearchView() {
           <>
             <SearchTags />
             <PopularStocks
-              stocks={dummyStocks.filter(
-                (stock) => stock.rank && stock.rank <= 5,
-              )}
+              stocks={popularStocks}
+              loading={loading}
               onStockClick={handleStockSelect}
             />
           </>
