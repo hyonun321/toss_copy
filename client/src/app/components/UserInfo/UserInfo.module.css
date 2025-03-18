@@ -1,0 +1,25 @@
+.userInfoContainer {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+}
+
+.avatarIcon {
+    border-radius: 50%;
+}
+
+.userInfoText {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.username {
+    font-weight: bold;
+}
+
+.email {
+    font-size: 14px;
+    color: #666;
+}
