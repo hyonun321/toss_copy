@@ -42,9 +42,40 @@ export function useSignup() {
       setLoading(false);
     }
   };
+  async function autoLogin(email: string, password: string) {
+    try {
+      const response = await fetch('http://localhost:8080/tokenLogin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          pwd: password,
+        }),
+      });
 
+      const data = await response.json();
+
+      if (data.Authorization && data.nickname) {
+        if (
+          typeof window !== 'undefined' &&
+          typeof sessionStorage !== 'undefined'
+        ) {
+          sessionStorage.setItem('authToken', data.Authorization);
+          sessionStorage.setItem('nickname', data.nickname);
+        }
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error('Auto login error:', err);
+      return false;
+    }
+  }
   return {
     registerUser,
+    autoLogin,
     loading,
     error,
     success,

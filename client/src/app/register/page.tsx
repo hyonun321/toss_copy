@@ -8,7 +8,7 @@ import { useSignup } from '../hooks/useSignup';
 const RegisterStep: React.FC = () => {
   const funnel = useMyFunnel();
   const router = useRouter();
-  const { registerUser, loading, error } = useSignup();
+  const { registerUser, loading, error, autoLogin } = useSignup();
   const [signupError, setSignupError] = useState<string | null>(null);
 
   async function handleSignup(
@@ -26,6 +26,7 @@ const RegisterStep: React.FC = () => {
     const success = await registerUser(userData);
 
     if (success) {
+      await autoLogin(userData.email, userData.pwd);
       router.push('/onboarding');
     } else {
       // 실패 시 에러 상태 업데이트
