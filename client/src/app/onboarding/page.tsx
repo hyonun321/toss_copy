@@ -45,7 +45,7 @@ export default function Onboarding() {
   const router = useRouter();
 
   const handleRoute = () => {
-    router.push('/main');
+    router.push('/');
   };
 
   useEffect(() => {
