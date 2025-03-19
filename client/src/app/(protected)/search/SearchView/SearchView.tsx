@@ -24,7 +24,6 @@ export function SearchView() {
   const [popularStocks, setPopularStocks] = useState<BaseStock[]>([]);
   const [loading, setLoading] = useState(true);
   const { email } = useAuthStore();
-  const userEmail = email; // 실제로는 상태/컨텍스트에서 가져와야 함
 
   // 인기 주식 데이터 가져오기
   useEffect(() => {
@@ -65,7 +64,7 @@ export function SearchView() {
     const fetchSearchHistory = async () => {
       try {
         setHistoryLoading(true);
-        const history = await getSearchHistory(userEmail);
+        const history = await getSearchHistory(email);
         setSearchHistory(history);
       } catch (error) {
         console.error('검색 기록 조회 실패:', error);
@@ -75,7 +74,7 @@ export function SearchView() {
     };
 
     fetchSearchHistory();
-  }, [userEmail]);
+  }, [email]);
 
   // 디바운싱을 위한 상태
   useEffect(() => {
@@ -105,7 +104,7 @@ export function SearchView() {
       // 검색 실행 및 결과 설정
       const results = await searchStocks(query);
       setSearchResults(results);
-      saveSearchQuery(userEmail, query);
+      saveSearchQuery(email, query);
     } catch (error) {
       console.error('검색 실패:', error);
     }
@@ -135,7 +134,7 @@ export function SearchView() {
 
     // 서버에서도 삭제
     try {
-      await deleteSearchQuery(userEmail, tag);
+      await deleteSearchQuery(email, tag);
     } catch (error) {
       console.error('검색어 삭제 실패:', error);
     }
