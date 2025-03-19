@@ -7,13 +7,22 @@ import { SearchResults } from '@/app/components/searchResults/SearchResults';
 import { SearchViewContainer, SearchContent } from './SearchView.style';
 import { BaseStock } from '@/app/types/stock';
 import { fetchPopularStocks, searchStocks } from './stockApi';
+import {
+  deleteSearchQuery,
+  getSearchHistory,
+  saveSearchQuery,
+} from './stockApi';
+import { SkeletonSearchTags } from '../SkeletonSearchTags/SkeletonSearchTags';
 
 export function SearchView() {
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(true);
   const [currentQuery, setCurrentQuery] = useState('');
   const [searchResults, setSearchResults] = useState<BaseStock[]>([]);
   const [popularStocks, setPopularStocks] = useState<BaseStock[]>([]);
   const [loading, setLoading] = useState(true);
+  // 현재 로그인된 사용자 이메일 (예시)
+  const userEmail = 'user@example.com'; // 실제로는 상태/컨텍스트에서 가져와야 함
 
   // 인기 주식 데이터 가져오기
   useEffect(() => {
@@ -47,6 +56,23 @@ export function SearchView() {
     getPopularStocks();
   }, []);
 
+  // 검색 기록 가져오기
+  useEffect(() => {
+    const fetchSearchHistory = async () => {
+      try {
+        setHistoryLoading(true);
+        const history = await getSearchHistory(userEmail);
+        setSearchHistory(history);
+      } catch (error) {
+        console.error('검색 기록 조회 실패:', error);
+      } finally {
+        setHistoryLoading(false);
+      }
+    };
+
+    fetchSearchHistory();
+  }, [userEmail]);
+
   // 디바운싱을 위한 상태
   useEffect(() => {
     const debounceTimeout = setTimeout(async () => {
@@ -75,6 +101,7 @@ export function SearchView() {
       // 검색 실행 및 결과 설정
       const results = await searchStocks(query);
       setSearchResults(results);
+      saveSearchQuery(userEmail, query);
     } catch (error) {
       console.error('검색 실패:', error);
     }
@@ -98,9 +125,16 @@ export function SearchView() {
     // 이미 히스토리에 있는 항목이므로 별도 추가는 불필요
   };
 
-  // 태그 삭제 처리
-  const handleTagRemove = (tag: string) => {
+  const handleTagRemove = async (tag: string) => {
+    // 로컬 상태 업데이트
     setSearchHistory((prev) => prev.filter((item) => item !== tag));
+
+    // 서버에서도 삭제
+    try {
+      await deleteSearchQuery(userEmail, tag);
+    } catch (error) {
+      console.error('검색어 삭제 실패:', error);
+    }
   };
 
   return (
@@ -121,11 +155,15 @@ export function SearchView() {
           />
         ) : (
           <>
-            <SearchTags
-              initialTags={searchHistory} // 실제 검색 히스토리 사용
-              onTagClick={handleTagClick} // 태그 클릭 이벤트 핸들러 추가
-              onTagRemove={handleTagRemove} // 태그 삭제 이벤트 핸들러 추가
-            />
+            {historyLoading ? (
+              <SkeletonSearchTags /> // 스켈레톤 UI 컴포넌트 (구현 필요)
+            ) : (
+              <SearchTags
+                initialTags={searchHistory}
+                onTagClick={handleTagClick}
+                onTagRemove={handleTagRemove}
+              />
+            )}
             <PopularStocks
               stocks={popularStocks}
               loading={loading}
