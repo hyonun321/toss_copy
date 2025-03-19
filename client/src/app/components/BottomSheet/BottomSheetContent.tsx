@@ -33,6 +33,8 @@ const BottomSheetContent: React.FC<BottomSheetContentProps> = ({
       <div className={styles.topBar}>
         {leftIcon && (
           <Image
+            width={25}
+            height={25}
             src={leftIcon}
             alt="icon"
             className={styles.leftIcon}
@@ -45,7 +47,13 @@ const BottomSheetContent: React.FC<BottomSheetContentProps> = ({
       {/* 이미지 & 설명 */}
       {imageSrc && (
         <div className={styles.imageContainer}>
-          <Image src={imageSrc} alt={imageAlt} className={styles.image} />
+          <Image
+            height={100}
+            width={100}
+            src={imageSrc}
+            alt={imageAlt}
+            className={styles.image}
+          />
           {description && <p className={styles.description}>{description}</p>}
         </div>
       )}
