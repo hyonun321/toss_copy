@@ -45,11 +45,14 @@ export interface DetailedStock extends BaseStock {
 // API 응답 타입
 export interface StockApiResponse {
   resultCode: string;
-  stocks: Array<{
-    code: string;
-    name: string;
-    price: number;
-    change: string;
-    changeRate: number;
-  }>;
+  code: string;
+  name: string;
+  price: number;
+  change: string;
+  changeRate: number;
+  exchangeCode: string;
+  lastUpdated: string;
+  positiveChange: boolean;
+  rank: number;
+  volume: string;
 }

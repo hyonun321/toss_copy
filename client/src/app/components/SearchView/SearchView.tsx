@@ -6,12 +6,14 @@ import { PopularStocks } from '@/app/components/PopularStocks/PopularStocks';
 import { SearchResults } from '@/app/components/searchResults/SearchResults';
 import { SearchViewContainer, SearchContent } from './SearchView.style';
 import { BaseStock } from '@/app/types/stock';
-import { fetchPopularStocks, searchStocks } from './stockApi';
 import {
   deleteSearchQuery,
   getSearchHistory,
   saveSearchQuery,
+  fetchPopularStocks,
+  searchStocks,
 } from './stockApi';
+import { StockApiResponse } from '@/app/types/stock';
 import { SkeletonSearchTags } from '../SkeletonSearchTags/SkeletonSearchTags';
 
 export function SearchView() {
@@ -32,18 +34,20 @@ export function SearchView() {
         const stocks = await fetchPopularStocks();
 
         // API 응답을 BaseStock 형태로 변환
-        const formattedStocks: BaseStock[] = stocks.map((stock: any) => ({
-          id: stock.code,
-          symbol: stock.code,
-          name: stock.name,
-          price: stock.price,
-          change: stock.change,
-          changePercent: parseFloat(stock.changeRate),
-          isPositive: stock.positiveChange,
-          rank: stock.rank,
-          logoType: 'normal', // 기본값, 필요에 따라 조정
-          country: 'kr',
-        }));
+        const formattedStocks: BaseStock[] = stocks.map(
+          (stock: StockApiResponse) => ({
+            id: stock.code,
+            symbol: stock.code,
+            name: stock.name,
+            price: stock.price,
+            change: stock.change,
+            changePercent: stock.changeRate,
+            isPositive: stock.positiveChange,
+            rank: stock.rank,
+            logoType: 'normal', // 기본값, 필요에 따라 조정
+            country: 'kr',
+          }),
+        );
 
         setPopularStocks(formattedStocks);
       } catch (error) {

@@ -24,7 +24,6 @@ export const searchStocks = async (query: string): Promise<BaseStock[]> => {
     const response = await axios.get(
       `${API_BASE_URL}/search/stocks?query=${encodeURIComponent(query)}`,
     );
-    console.log(response);
 
     // 엘라스틱서치 결과를 BaseStock 형태로 변환
     return response.data.map((item: elasticStockProps) => ({
