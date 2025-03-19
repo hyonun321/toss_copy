@@ -94,7 +94,7 @@ export const useAuthStore = create<AuthState>()(
           });
 
           const data: LoginResponse = await response.json();
-
+          sessionStorage.setItem('email', email); // 이메일 저장
           if (data.Authorization && data.nickname) {
             // 인증 정보 저장 (이메일 포함)
             get().setAuth(data.Authorization, email, data.nickname);
