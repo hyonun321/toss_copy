@@ -7,12 +7,12 @@ import {
   StockLogo,
   StockInfo,
   StockSymbol,
-  StockDescription,
   CountryFlag,
   LeverageTag,
   HighlightText,
   NoResultsMessage,
 } from './SearchResults.style';
+import { StockName } from '../PopularStocks/PopularStocks.style';
 
 interface SearchResultsProps {
   results: BaseStock[];
@@ -27,7 +27,6 @@ export function SearchResults({
 }: SearchResultsProps) {
   console.log(searchQuery);
   const highlightMatch = (text: string) => {
-    console.log(text, '테스트');
     if (!searchQuery) return text;
 
     const parts = text.split(new RegExp(`(${searchQuery})`, 'gi'));
@@ -52,21 +51,14 @@ export function SearchResults({
     <SearchResultsContainer>
       {results.map((stock) => (
         <SearchResultItem key={stock.id} onClick={() => onStockSelect(stock)}>
-          <StockLogo logoType={stock.logoType || 'normal'}>
+          <StockLogo logoType={stock.country || 'kr'}>
             {stock.leverage && <LeverageTag>{stock.leverage}</LeverageTag>}
-            {stock.country === 'us' && <CountryFlag>🇺🇸</CountryFlag>}
+            {stock.name[0]}
+            <CountryFlag>{stock.country}</CountryFlag>
           </StockLogo>
           <StockInfo>
+            <StockName>{highlightMatch(stock.name)}</StockName>
             <StockSymbol>{stock.symbol}</StockSymbol>
-
-            {/* 조건부 로직 수정 */}
-            {stock.description ? (
-              <StockDescription>
-                {highlightMatch(stock.description)}
-              </StockDescription>
-            ) : (
-              <StockDescription>{highlightMatch(stock.name)}</StockDescription>
-            )}
           </StockInfo>
         </SearchResultItem>
       ))}

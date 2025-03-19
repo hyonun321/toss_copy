@@ -27,16 +27,12 @@ export const StockLogo = styled.div<{ logoType: string }>`
   position: relative;
   background-color: ${(props) => {
     switch (props.logoType) {
-      case 'tesla':
-        return '#e74c3c';
-      case 'etf':
-        return '#e74c3c';
-      case 'kodex':
-        return '#2980b9';
-      case 'inverse':
-        return '#e74c3c';
+      case 'us':
+        return theme.colors.blue;
+      case 'kr':
+        return theme.colors.gray;
       default:
-        return '#7f8c8d';
+        return theme.colors.white;
     }
   }};
 `;
@@ -45,7 +41,9 @@ export const CountryFlag = styled.span`
   position: absolute;
   bottom: -2px;
   right: -2px;
-  font-size: 10px;
+  font-size: 9px;
+  background-color: ${theme.colors.white};
+  border-radius: 25px;
 `;
 
 export const LeverageTag = styled.span`
@@ -53,7 +51,7 @@ export const LeverageTag = styled.span`
   bottom: 0;
   right: 0;
   background-color: white;
-  color: #e74c3c;
+  color: ${theme.colors.lightGray};
   font-size: 10px;
   font-weight: bold;
   padding: 2px 4px;
@@ -66,17 +64,18 @@ export const StockInfo = styled.div`
 
 export const StockSymbol = styled.div`
   font-weight: 500;
-  font-size: 16px;
+  color: ${theme.colors.boldGray};
+  font-size: 14px;
 `;
 
 export const StockDescription = styled.div`
-  color: ${theme.colors.boldGray};
-  font-size: 14px;
+  color: ${theme.colors.black};
+  font-size: 16px;
   margin-top: 4px;
 `;
 
 export const HighlightText = styled.span`
-  color: #3498db;
+  color: ${theme.colors.blue};
   font-weight: 500;
 `;
 

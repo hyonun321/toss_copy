@@ -5,7 +5,6 @@ import { SearchTags } from '@/app/components/SearchTags/SearchTags';
 import { PopularStocks } from '@/app/components/PopularStocks/PopularStocks';
 import { SearchResults } from '@/app/components/searchResults/SearchResults';
 import { SearchViewContainer, SearchContent } from './SearchView.style';
-import { dummyStocks } from '@/app/data/dummyStocks';
 import { BaseStock } from '@/app/types/stock';
 import { fetchPopularStocks, searchStocks } from './stockApi';
 
@@ -50,30 +49,35 @@ export function SearchView() {
 
   // 디바운싱을 위한 상태
   useEffect(() => {
-    const debounceTimeout = setTimeout(() => {
+    const debounceTimeout = setTimeout(async () => {
       if (currentQuery.trim().length > 0) {
-        // 실제로는 여기서 API 호출을 할 수 있습니다
-        const results = dummyStocks.filter(
-          (stock) =>
-            stock.name.toLowerCase().includes(currentQuery.toLowerCase()) ||
-            stock.symbol.toLowerCase().includes(currentQuery.toLowerCase()),
-        );
-        setSearchResults(results);
+        try {
+          const results = await searchStocks(currentQuery);
+          setSearchResults(results);
+        } catch (error) {
+          console.error('검색 중 오류 발생:', error);
+          setSearchResults([]);
+        }
       } else {
         setSearchResults([]);
       }
-    }, 300); // 300ms 디바운스
+    }, 300);
 
     return () => clearTimeout(debounceTimeout);
   }, [currentQuery]);
 
-  const handleSearch = (query: string) => {
+  const handleSearch = async (query: string) => {
     if (!searchHistory.includes(query)) {
       setSearchHistory((prev) => [query, ...prev]);
     }
-    console.log('검색어:', query);
-    console.log(searchStocks(query));
-    // 전체 검색 실행 (예: 다른 페이지로 이동)
+
+    try {
+      // 검색 실행 및 결과 설정
+      const results = await searchStocks(query);
+      setSearchResults(results);
+    } catch (error) {
+      console.error('검색 실패:', error);
+    }
   };
 
   const handleQueryChange = (query: string) => {
@@ -82,11 +86,6 @@ export function SearchView() {
 
   const handleStockSelect = (stock: BaseStock) => {
     console.log('선택한 주식:', stock);
-    const searchTerm = stock.name;
-    // 검색 히스토리에 추가
-    if (!searchHistory.includes(searchTerm)) {
-      setSearchHistory((prev) => [searchTerm, ...prev]);
-    }
   };
 
   // 태그(검색 히스토리) 클릭 처리
