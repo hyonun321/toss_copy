@@ -89,7 +89,6 @@ export function HomeView() {
                   item.isPositiveChange !== undefined
                     ? item.isPositiveChange
                     : !item.change.startsWith('-'),
-                isFavorite: false,
               }),
             );
 
@@ -167,7 +166,6 @@ export function HomeView() {
             change={stock.change}
             changePercentage={stock.changePercentage}
             isPositiveChange={stock.isPositiveChange}
-            isFavorite={stock.isFavorite}
           />
         ))}
       </StockListContainer>

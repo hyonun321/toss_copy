@@ -1,7 +1,7 @@
 'use client';
 
 import { FaHeart } from 'react-icons/fa';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { theme } from '@/app/theme/theme';
 import {
   ItemContainer,
@@ -9,7 +9,6 @@ import {
   Rank,
   StockMarker,
   StockName,
-  //   StockCode,
   StockInfoContainer,
   Price,
   PriceContainer,
@@ -22,23 +21,62 @@ type StockListItemProps = {
   stockCode: string;
   stockName: string;
   price: string;
-  change: string;
   changePercentage: string;
   isPositiveChange: boolean;
-  isFavorite?: boolean;
+  change?: string;
 };
 
 export function StockListItem({
   rank,
-  //   stockCode,
+  stockCode,
   stockName,
   price,
-  //   change,
   changePercentage,
   isPositiveChange,
-  isFavorite = false,
 }: StockListItemProps) {
-  const [favorite, setFavorite] = useState(isFavorite);
+  const [favorite, setFavorite] = useState(false);
+  const email =
+    typeof window !== 'undefined' ? sessionStorage.getItem('email') : null;
+
+  useEffect(() => {
+    if (email) {
+      fetch(
+        `http://localhost:8080/api/likes/isLiked?email=${email}&stockCode=${stockCode}`,
+      )
+        .then((res) => res.json())
+        .then((isLiked) => setFavorite(isLiked))
+        .catch((err) => console.error('좋아요 상태 조회 실패:', err));
+    }
+  }, [stockCode]);
+
+  const handleFavoriteClick = async () => {
+    if (!email) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    try {
+      const url = favorite
+        ? 'http://localhost:8080/api/likes/remove'
+        : 'http://localhost:8080/api/likes/add';
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, stockCode }),
+      });
+
+      if (response.ok) {
+        setFavorite(!favorite);
+      } else {
+        console.error('좋아요 변경 실패');
+      }
+    } catch (err) {
+      console.error('좋아요 변경 중 오류 발생:', err);
+    }
+  };
 
   return (
     <ItemContainer>
@@ -48,7 +86,6 @@ export function StockListItem({
       </RankContainer>
       <StockInfoContainer>
         <StockName>{stockName}</StockName>
-        {/* <StockCode>{stockCode}</StockCode> */}
         <PriceContainer>
           <Price>{price}</Price>
           <ChangeText isPositive={isPositiveChange}>
@@ -56,11 +93,7 @@ export function StockListItem({
           </ChangeText>
         </PriceContainer>
       </StockInfoContainer>
-      <FavoriteButton
-        onClick={() => {
-          setFavorite(!favorite);
-        }}
-      >
+      <FavoriteButton onClick={handleFavoriteClick}>
         {favorite ? (
           <FaHeart color={theme.colors.red} size={20} />
         ) : (
