@@ -4,7 +4,12 @@ export type Endpoint =
   | 'domestic/trade-value'
   | 'domestic/volume'
   | 'domestic/rising'
-  | 'domestic/falling';
+  | 'domestic/falling'
+  | string
+  | 'overseas/trade-value'
+  | 'overseas/volume'
+  | 'overseas/rising'
+  | 'overseas/falling';
 export const TAB_TO_ENDPOINT = {
   거래대금: 'domestic/trade-value',
   거래량: 'domestic/volume',

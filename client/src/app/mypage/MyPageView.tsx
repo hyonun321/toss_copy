@@ -1,24 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MarketHeader } from '@/app/components/MarketHeader/MarketHeader';
-import { ImageText } from '@/app/components/ImageText/ImageText';
 import { CategoryTabs } from '@/app/components/CategoryTabs/CategoryTabs';
 import { StockListItem } from '@/app/components/StockListItem/StockListItem';
 import { BottomNavigation } from '@/app/components/BottomNavigation/BottomNavigation';
 import { ALL_ENDPOINTS, Endpoint } from '@/app/constants/tabMappings';
-import {
-  CategoryDataType,
-  ApiResponse,
-  TransformedStockItem,
-} from '@/app/types';
+import { ApiResponse, TransformedStockItem } from '@/app/types';
 import {
   PageContainer,
-  SectionTitle,
   StockListContainer,
   LoadingIndicator,
   ErrorMessage,
-} from './HomeView.style';
+} from './MyPageView.style';
 
 import {
   formatPrice,
@@ -27,28 +20,21 @@ import {
 } from '@/app/utils/formatters';
 import Image from 'next/image';
 
-export function HomeView() {
-  const [activeTab, setActiveTab] = useState<Endpoint>('domestic/trade-value');
-  const [categoryData, setCategoryData] = useState<CategoryDataType>(
-    ALL_ENDPOINTS.reduce(
-      (acc, endpoint) => ({
-        ...acc,
-        [endpoint]: [],
-      }),
-      {} as CategoryDataType,
-    ),
+export function MyPageView() {
+  const [activeTab, setActiveTab] = useState<Endpoint>('all');
+  const [favoriteStocks, setFavoriteStocks] = useState<TransformedStockItem[]>(
+    [],
   );
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<number>(Date.now());
-  const nickname =
-    typeof window !== 'undefined' ? sessionStorage.getItem('nickname') : null;
+
   const refreshData = () => {
     setLastRefreshed(Date.now());
   };
 
   useEffect(() => {
-    async function fetchAllCategoryData() {
+    async function fetchFavoriteStocks() {
       setInitialLoading(true);
       setError(null);
 
@@ -68,17 +54,13 @@ export function HomeView() {
           }),
         );
 
-        const newCategoryData: CategoryDataType = ALL_ENDPOINTS.reduce(
-          (acc, endpoint) => ({
-            ...acc,
-            [endpoint]: [],
-          }),
-          {} as CategoryDataType,
-        );
+        let allFavoriteStocks: TransformedStockItem[] = [];
+
         results.forEach(({ category, data }) => {
           if (data.resultCode === '0' && Array.isArray(data.stocks)) {
             const transformedData: TransformedStockItem[] = data.stocks.map(
               (item, index) => ({
+                category: category,
                 rank: index + 1,
                 stockCode: item.code,
                 stockName: item.name,
@@ -89,15 +71,25 @@ export function HomeView() {
                   item.isPositiveChange !== undefined
                     ? item.isPositiveChange
                     : !item.change.startsWith('-'),
-                isFavorite: false,
+                isFavorite: true,
               }),
             );
 
-            newCategoryData[category as Endpoint] = transformedData;
+            const randomFavorites = transformedData.slice(
+              0,
+              Math.floor(Math.random() * 3) + 2,
+            );
+
+            allFavoriteStocks = [...allFavoriteStocks, ...randomFavorites];
           }
         });
 
-        setCategoryData(newCategoryData);
+        allFavoriteStocks = allFavoriteStocks.map((stock, index) => ({
+          ...stock,
+          rank: index + 1,
+        }));
+
+        setFavoriteStocks(allFavoriteStocks);
       } catch (err) {
         console.error('데이터 로딩 중 오류 발생:', err);
         setError(
@@ -110,33 +102,46 @@ export function HomeView() {
       }
     }
 
-    fetchAllCategoryData();
+    fetchFavoriteStocks();
   }, [lastRefreshed]);
 
   const handleTabChange = (tabType: Endpoint) => {
     setActiveTab(tabType);
+    refreshData();
   };
 
-  const currentTabData = categoryData[activeTab] || [];
-  const stockListData =
-    initialLoading || error || !currentTabData.length ? [] : currentTabData;
+  const filteredStocks = favoriteStocks.filter((stock) => {
+    if (activeTab === 'all') return true;
+    if (activeTab === 'foreign') {
+      return ['TSLA', 'NVDL', 'S&P 500'].some(
+        (prefix) =>
+          stock.stockCode.includes(prefix) || stock.stockName.includes(prefix),
+      );
+    }
+    if (activeTab === 'domestic') {
+      return !['TSLA', 'NVDL', 'S&P 500'].some(
+        (prefix) =>
+          stock.stockCode.includes(prefix) || stock.stockName.includes(prefix),
+      );
+    }
+    return true;
+  });
 
   return (
     <PageContainer>
-      <MarketHeader onRefresh={refreshData} />
-      <ImageText
-        imageSrc="/images/egg.png"
-        text={
-          <>
-            반가워요 {nickname}님!
-            <br />
-            오늘의 실시간 차트를 확인하세요
-          </>
-        }
-      />
-      <SectionTitle>실시간 차트</SectionTitle>
+      <div style={{ padding: '20px', fontSize: '18px', fontWeight: 'bold' }}>
+        내 종목 보기
+      </div>
 
-      <CategoryTabs onTabChange={handleTabChange} activeTab={activeTab} />
+      <CategoryTabs
+        onTabChange={handleTabChange}
+        activeTab={activeTab}
+        customTabs={[
+          { id: 'all', label: '전체' },
+          { id: 'foreign', label: '해외주식' },
+          { id: 'domestic', label: '국내주식' },
+        ]}
+      />
 
       {initialLoading && (
         <LoadingIndicator>
@@ -157,7 +162,7 @@ export function HomeView() {
       )}
 
       <StockListContainer>
-        {stockListData.map((stock) => (
+        {filteredStocks.map((stock) => (
           <StockListItem
             key={`${stock.rank}-${stock.stockCode}`}
             rank={stock.rank}
@@ -171,7 +176,7 @@ export function HomeView() {
           />
         ))}
       </StockListContainer>
-      <BottomNavigation state="home" />
+      <BottomNavigation state="mypage" />
     </PageContainer>
   );
 }

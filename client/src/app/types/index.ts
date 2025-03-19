@@ -17,6 +17,7 @@ export interface StockData {
 }
 
 export interface TransformedStockItem {
+  category?: string;
   rank: number;
   stockCode: string;
   stockName: string;

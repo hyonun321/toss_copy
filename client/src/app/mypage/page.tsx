@@ -1,4 +1,5 @@
-'use client';
-export default function Mypage() {
-  return <>h2</>;
+import { MyPageView } from './MyPageView';
+
+export default function MyPage() {
+  return <MyPageView />;
 }
