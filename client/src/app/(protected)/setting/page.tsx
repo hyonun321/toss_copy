@@ -8,18 +8,19 @@ import styles from './page.module.css';
 import BottomSheet from '@/app/components/BottomSheet/BottomSheet';
 import { useState } from 'react';
 import BottomSheetContent from '@/app/components/BottomSheet/BottomSheetContent';
+import { useAuthStore } from '@/app/stores/authStore';
 
 const SettingPage = () => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-
+  const { nickname, email, logout } = useAuthStore();
   const handleLogout = () => {
     setIsOpen(true);
   };
   return (
     <div className={styles.settingPage}>
       <TopBar />
-      <UserInfo username="{유저닉네임}" email="test@doss.ui" />
+      <UserInfo username={nickname} email={email} />
       <div className={styles.divider} />
       <div className={styles.content}>
         <Option
@@ -31,12 +32,12 @@ const SettingPage = () => {
         <Option
           iconSrc="/images/user.png"
           label="닉네임 변경"
-          onClick={() => router.push('/password-change')}
+          onClick={() => router.push('/nickname')}
         />
         <Option
           iconSrc="/images/lock.png"
           label="비밀번호 변경"
-          onClick={() => router.push('/password-change')}
+          onClick={() => router.push('/password')}
         />
         <Option
           iconSrc="/images/unlock.png"
@@ -52,7 +53,10 @@ const SettingPage = () => {
               rightButtonText="로그아웃"
               onClose={() => setIsOpen(false)}
               onLeftClick={() => console.log('취소 클릭')}
-              onRightClick={() => console.log('삭제 클릭')}
+              onRightClick={() => {
+                logout();
+                router.push('/');
+              }}
             />
           </BottomSheet>
         )}

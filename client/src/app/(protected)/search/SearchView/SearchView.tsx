@@ -15,7 +15,7 @@ import {
 } from './stockApi';
 import { StockApiResponse } from '@/app/types/stock';
 import { SkeletonSearchTags } from '../../../components/SkeletonSearchTags/SkeletonSearchTags';
-
+import { useAuthStore } from '@/app/stores/authStore';
 export function SearchView() {
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
@@ -23,8 +23,8 @@ export function SearchView() {
   const [searchResults, setSearchResults] = useState<BaseStock[]>([]);
   const [popularStocks, setPopularStocks] = useState<BaseStock[]>([]);
   const [loading, setLoading] = useState(true);
-  // 현재 로그인된 사용자 이메일 (예시)
-  const userEmail = 'user@example.com'; // 실제로는 상태/컨텍스트에서 가져와야 함
+  const { email } = useAuthStore();
+  const userEmail = email; // 실제로는 상태/컨텍스트에서 가져와야 함
 
   // 인기 주식 데이터 가져오기
   useEffect(() => {

@@ -1,12 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import styles from './page.module.css';
 import { Button } from '@/app/components/Button/Button';
 import { InputField } from '@/app/components/TextField/InputField';
 import { AuthHeader } from '@/app/components/AuthHeader/AuthHeader';
 import { useLogin } from '@/app/hooks/useLogin';
 import { useRouter } from 'next/navigation';
+import {
+  Container,
+  InputContainer,
+  FixedButtonContainer,
+  ErrorMessage,
+} from './page.style';
 
 export default function AuthPage() {
   const [resizeHeight, setResizeHeight] = useState<number>(0);
@@ -38,10 +43,10 @@ export default function AuthPage() {
   };
 
   return (
-    <div className={styles.container}>
+    <Container>
       <AuthHeader title="로그인" onActionClick={handleRouteBack} />
 
-      <div className={styles.inputContainer}>
+      <InputContainer>
         <InputField
           type="email"
           label="이메일 입력"
@@ -54,14 +59,10 @@ export default function AuthPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        {/* TODO : 에러 메세지 등장 컴포넌트  */}
-        {error && <p className={styles.errorMessage}>{error}</p>}
-      </div>
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+      </InputContainer>
 
-      <div
-        className={styles.fixedButton}
-        style={{ bottom: `calc(16px + ${resizeHeight}px)` }}
-      >
+      <FixedButtonContainer bottomOffset={resizeHeight}>
         <Button
           text="로그인"
           onClick={login}
@@ -74,7 +75,7 @@ export default function AuthPage() {
           backgroundColor="red"
           textColor="white"
         />
-      </div>
-    </div>
+      </FixedButtonContainer>
+    </Container>
   );
 }

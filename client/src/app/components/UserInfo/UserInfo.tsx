@@ -4,8 +4,8 @@ import Image from 'next/image';
 import styles from './UserInfo.module.css';
 
 interface UserInfoProps {
-  username: string;
-  email: string;
+  username: string | null;
+  email: string | null;
 }
 
 export const UserInfo = ({ username, email }: UserInfoProps) => {
