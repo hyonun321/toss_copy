@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './BottomSheetContent.module.css';
+import Image from 'next/image';
 
 interface BottomSheetContentProps {
   title: string;
@@ -31,7 +32,7 @@ const BottomSheetContent: React.FC<BottomSheetContentProps> = ({
       {/* 상단 바 */}
       <div className={styles.topBar}>
         {leftIcon && (
-          <img
+          <Image
             src={leftIcon}
             alt="icon"
             className={styles.leftIcon}
@@ -44,7 +45,7 @@ const BottomSheetContent: React.FC<BottomSheetContentProps> = ({
       {/* 이미지 & 설명 */}
       {imageSrc && (
         <div className={styles.imageContainer}>
-          <img src={imageSrc} alt={imageAlt} className={styles.image} />
+          <Image src={imageSrc} alt={imageAlt} className={styles.image} />
           {description && <p className={styles.description}>{description}</p>}
         </div>
       )}
