@@ -74,4 +74,18 @@ public class MemberDao {
             System.out.println(i + "행이 insert되었습니다");
         }
     }
+    
+    public void updateMember(Member m) throws Exception {
+        String sql = "UPDATE member SET nickname = ? WHERE email = ?";
+        try (Connection con = dataSource.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, m.getNickname());
+            stmt.setString(2, m.getEmail());
+            int i = stmt.executeUpdate();
+            if (i == 0) {
+                throw new Exception("존재하지 않는 사용자입니다.");
+            }
+            System.out.println(i + "행이 update되었습니다");
+        }
+    }
 }
