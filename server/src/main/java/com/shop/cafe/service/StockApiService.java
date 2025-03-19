@@ -748,4 +748,105 @@ public class StockApiService {
         logger.info("해외 주식 정적 데이터 생성 완료: " + stocks.size() + "개 종목");
         return stocks;
     }
+    
+
+    /**
+     * 인기 주식 목록을 API에서 조회합니다.
+     * 한국투자증권 관심종목등록 상위 API를 사용합니다.
+     * 
+     * @return 인기 주식 정보 목록
+     */
+    public List<StockInfo> getPopularStocks() {
+        try {
+            String token = getToken();
+            if (token == null) {
+                logger.warning("토큰 발급 실패로 정적 인기 주식 데이터 반환");
+                throw new RuntimeException("토큰 발급 실패로 정적 인기 주식 데이터 반환");
+            }
+            
+            // 요청 URL 및 파라미터 설정
+            String url = apiUrl + "/uapi/domestic-stock/v1/ranking/top-interest-stock";
+            
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+                .queryParam("fid_cond_mrkt_div_code", "J")          // 시장구분코드 (주식 J)
+                .queryParam("fid_cond_scr_div_code", "20180")       // 화면 분류 코드
+                .queryParam("fid_input_iscd", "0000")               // 전체 종목
+                .queryParam("fid_trgt_cls_code", "0")               // 대상 구분 코드
+                .queryParam("fid_trgt_exls_cls_code", "0")          // 대상 제외 구분 코드
+                .queryParam("fid_input_price_1", "")                // 가격 조건 없음
+                .queryParam("fid_input_price_2", "")                // 가격 조건 없음
+                .queryParam("fid_vol_cnt", "")                      // 거래량 조건 없음
+                .queryParam("fid_div_cls_code", "0")                // 종목 분류 (전체)
+                .queryParam("fid_input_iscd_2", "000000")           // 필수값
+                .queryParam("fid_input_cnt_1", "1");                // 1위부터 조회
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("authorization", "Bearer " + token);
+            headers.set("appkey", appKey);
+            headers.set("appsecret", appSecret);
+            headers.set("tr_id", "FHPST01800000");  // 관심종목등록 상위 TR ID
+            headers.set("custtype", "P");
+            
+            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+            
+            ResponseEntity<String> response = restTemplate.exchange(
+                builder.toUriString(),
+                HttpMethod.GET,
+                requestEntity,
+                String.class
+            );
+            
+            if (response.getStatusCode() == HttpStatus.OK) {
+                logger.info("인기 주식 조회 성공");
+                
+                JSONObject jsonResponse = new JSONObject(response.getBody());
+                
+                // 응답 구조 확인
+                if (!jsonResponse.has("output")) {
+                    logger.warning("API 응답에 'output' 필드가 없습니다: " + response.getBody());
+                    throw new RuntimeException("인기 주식 응답 구조 에러 " + response.getStatusCode());
+                }
+                
+                JSONArray stockArray = jsonResponse.getJSONArray("output");
+                List<StockInfo> stocks = new ArrayList<>();
+                
+                // 최대 30개만 처리 (API 문서 상 최대 30건)
+                int limit = Math.min(stockArray.length(), 10);
+                
+                for (int i = 0; i < limit; i++) {
+                    JSONObject stockJson = stockArray.getJSONObject(i);
+                    
+                    StockInfo stock = new StockInfo(
+                        stockJson.getString("mksc_shrn_iscd"),  // 종목 코드
+                        stockJson.getString("hts_kor_isnm"),    // 종목명
+                        stockJson.getString("stck_prpr"),       // 현재가
+                        stockJson.getString("prdy_vrss"),       // 대비
+                        stockJson.getString("prdy_ctrt"),       // 등락률
+                        stockJson.getString("acml_vol"),        // 거래량
+                        "KRX"                                  // 거래소 코드
+                    );
+                    
+                    // 추가 정보 설정 - 순위와 상승/하락 여부
+                    stock.setRank(Integer.parseInt(stockJson.getString("data_rank")));
+                    stock.setPositiveChange(stockJson.getString("prdy_vrss_sign").equals("2") || 
+                                           stockJson.getString("prdy_vrss_sign").equals("1"));
+                    
+                    stocks.add(stock);
+                }
+                
+                return stocks;
+            } else {
+                throw new RuntimeException("인기 주식 조회 실패: " + response.getStatusCode());
+            }
+        } catch (Exception e) {
+            logger.warning("API 호출 실패로 정적 인기 주식 데이터 반환: " + e.getMessage());
+            throw new RuntimeException("API 호출 실패로 정적 인기 주식 데이터 반환 실패: ");
+        }
+    }
+    
+    
+    
+    
+    
 }

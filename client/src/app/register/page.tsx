@@ -1,13 +1,41 @@
 'use client';
 import { useMyFunnel } from './funnelcontext';
-import React from 'react';
+import React, { useState } from 'react';
 import REGISTER from './registerview';
+import { useRouter } from 'next/navigation';
+import { useSignup } from '../hooks/useSignup';
 
 const RegisterStep: React.FC = () => {
   const handleRouteBack = () => {
     funnel.history.go(-1);
   };
   const funnel = useMyFunnel();
+  const router = useRouter();
+  const { registerUser, loading, error, autoLogin } = useSignup();
+  const [signupError, setSignupError] = useState<string | null>(null);
+
+  async function handleSignup(
+    context: { nickname: string; password: string },
+    plantLocation: string,
+  ) {
+    const userData = {
+      email: context.nickname,
+      nickname: context.password,
+      pwd: plantLocation,
+    };
+
+    console.log('회원가입 데이터:', userData);
+
+    const success = await registerUser(userData);
+
+    if (success) {
+      await autoLogin(userData.email, userData.pwd);
+      router.push('/onboarding');
+    } else {
+      // 실패 시 에러 상태 업데이트
+      setSignupError(error || '회원가입에 실패했습니다.');
+    }
+  }
   return (
     <funnel.Render
       email={({ history }) => (
@@ -40,9 +68,11 @@ const RegisterStep: React.FC = () => {
           placeholder="비밀번호 입력"
           buttonText="회원가입"
           validationType="password"
-          onNext={(password) =>
-            console.log('등록 완료:', { ...context, password })
-          }
+          isLoading={loading}
+          serverError={signupError}
+          onNext={(plantLocation) => {
+            handleSignup(context, plantLocation);
+          }}
         />
       )}
     />

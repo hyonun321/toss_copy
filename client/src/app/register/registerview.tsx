@@ -15,6 +15,8 @@ type RegisterProps = {
   buttonText: string;
   validationType: ValidationType;
   onActionClick?: () => void;
+  isLoading?: boolean;
+  serverError?: string | null; // 서버 에러 메시지를 위한 선택적 prop 추가
 };
 
 const REGISTER: React.FC<RegisterProps> = ({
@@ -25,6 +27,8 @@ const REGISTER: React.FC<RegisterProps> = ({
   buttonText,
   validationType,
   onActionClick,
+  isLoading = false,
+  serverError,
 }) => {
   const [resizeHeight, setResizeHeight] = useState<number>(0);
   const { value, error, handleChange } = useValidation(validationType);
@@ -43,7 +47,7 @@ const REGISTER: React.FC<RegisterProps> = ({
   }, []);
 
   const handleNext = () => {
-    if (!error && value) {
+    if (!error && value && !isLoading) {
       onNext(value);
     }
   };
@@ -62,6 +66,9 @@ const REGISTER: React.FC<RegisterProps> = ({
           onChange={handleChange}
         />
         {error && <p className={styles.errorMessage}>{error}</p>}
+        {!error && serverError && (
+          <p className={styles.errorMessage}>{serverError}</p>
+        )}
       </div>
 
       <div

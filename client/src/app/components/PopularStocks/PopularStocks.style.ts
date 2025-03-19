@@ -39,7 +39,7 @@ export const StockItemButton = styled.button`
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 16px;
+  padding: 12px;
   cursor: pointer;
   text-align: left;
   border: none;

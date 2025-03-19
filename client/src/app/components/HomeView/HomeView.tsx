@@ -41,7 +41,8 @@ export function HomeView() {
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<number>(Date.now());
-
+  const nickname =
+    typeof window !== 'undefined' ? sessionStorage.getItem('nickname') : null;
   const refreshData = () => {
     setLastRefreshed(Date.now());
   };
@@ -67,8 +68,13 @@ export function HomeView() {
           }),
         );
 
-        const newCategoryData: CategoryDataType = { ...categoryData };
-
+        const newCategoryData: CategoryDataType = ALL_ENDPOINTS.reduce(
+          (acc, endpoint) => ({
+            ...acc,
+            [endpoint]: [],
+          }),
+          {} as CategoryDataType,
+        );
         results.forEach(({ category, data }) => {
           if (data.resultCode === '0' && Array.isArray(data.stocks)) {
             const transformedData: TransformedStockItem[] = data.stocks.map(
@@ -122,7 +128,7 @@ export function HomeView() {
         imageSrc="/images/egg.png"
         text={
           <>
-            반가워요 test 님!
+            반가워요 {nickname}님!
             <br />
             오늘의 실시간 차트를 확인하세요
           </>
@@ -135,6 +141,7 @@ export function HomeView() {
       {initialLoading && (
         <LoadingIndicator>
           <Image
+            unoptimized={true}
             src="/images/loading.gif"
             alt="데이터를 불러오는 중입니다..."
             width={50}
