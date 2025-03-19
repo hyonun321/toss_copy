@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { SearchBar } from '@/app/components/SearchBar/SearchBar';
 import { SearchTags } from '@/app/components/SearchTags/SearchTags';
 import { PopularStocks } from '@/app/components/PopularStocks/PopularStocks';
-import { SearchResults } from '@/app/components/searchResults/SearchResults';
+import { SearchResults } from '@/app/components/SearchResults/SearchResults';
 import { SearchViewContainer, SearchContent } from './SearchView.style';
 import { BaseStock } from '@/app/types/stock';
 import {
