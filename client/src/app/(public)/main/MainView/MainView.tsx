@@ -1,6 +1,6 @@
 'use client';
-import { Button } from '../Button/Button';
-import { ViewContainer } from '../viewContainer/viewContainer';
+import { Button } from '../../../components/Button/Button';
+import { ViewContainer } from '../../../components/viewContainer/viewContainer';
 import styles from './MainView.module.css';
 import { ImageText } from '@/app/components/ImageText/ImageText';
 import { useRouter } from 'next/navigation';

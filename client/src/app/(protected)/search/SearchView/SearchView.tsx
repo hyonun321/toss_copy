@@ -14,7 +14,7 @@ import {
   searchStocks,
 } from './stockApi';
 import { StockApiResponse } from '@/app/types/stock';
-import { SkeletonSearchTags } from '../SkeletonSearchTags/SkeletonSearchTags';
+import { SkeletonSearchTags } from '../../../components/SkeletonSearchTags/SkeletonSearchTags';
 
 export function SearchView() {
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
