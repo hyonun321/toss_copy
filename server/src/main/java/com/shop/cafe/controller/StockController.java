@@ -36,7 +36,14 @@ public class StockController {
         StockApiResponse response = new StockApiResponse("0", "성공", stocks);
         return ResponseEntity.ok(response);
     }
-
+ // 인기 주식 목록 조회
+    @GetMapping("/popular")
+    public ResponseEntity<StockApiResponse> getPopularStocks() {
+        List<StockInfo> stocks = stockService.getPopularStocks();
+        System.out.println("인기 주식 조회: " + stocks);
+        StockApiResponse response = new StockApiResponse("0", "성공", stocks);
+        return ResponseEntity.ok(response);
+    }
     // 국내 주식 거래량 상위 조회
     @GetMapping("/domestic/volume")
     public ResponseEntity<StockApiResponse> getDomesticVolumeRanking() {

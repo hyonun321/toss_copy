@@ -19,6 +19,9 @@ export const Tag = styled.div`
   padding: 6px 12px;
   font-size: 14px;
   color: ${theme.colors.darkGray};
+  &:hover {
+    background-color: ${theme.colors.gray}; // 호버 시 약간 더 어두운 배경색
+  }
 `;
 
 export const RemoveTagButton = styled.button`

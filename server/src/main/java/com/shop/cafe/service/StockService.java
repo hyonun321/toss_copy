@@ -21,6 +21,7 @@ public class StockService {
     
     // 데이터 갱신 주기 (분)
     private static final int DATA_REFRESH_INTERVAL = 15;
+    private static final String POPULAR_STOCKS_KEY = "popular_stocks";
     
     @Autowired
     public StockService(StockApiService stockApiService, StockDao stockDao) {
@@ -43,6 +44,26 @@ public class StockService {
         	refreshOverseasStocks();
         }
         return stockDao.getOverseasStocks();
+    }
+    
+ // 인기 주식 조회
+    public List<StockInfo> getPopularStocks() {
+        if (needsRefresh(stockDao.getLastUpdated(POPULAR_STOCKS_KEY))) {
+            refreshPopularStocks();
+        }
+        return stockDao.getStocks(POPULAR_STOCKS_KEY);
+    }
+    
+ // 인기 주식 데이터 갱신
+    public void refreshPopularStocks() {
+        try {
+            logger.info("인기 주식 데이터 갱신 시작...");
+            List<StockInfo> stocks = stockApiService.getPopularStocks();
+            stockDao.saveStocks(POPULAR_STOCKS_KEY, stocks);
+            logger.info("인기 주식 데이터 갱신 완료: " + stocks.size() + "개 종목");
+        } catch (Exception e) {
+            logger.severe("인기 주식 데이터 갱신 실패: " + e.getMessage());
+        }
     }
     
     // 특정 종목 정보 조회
@@ -176,6 +197,7 @@ public class StockService {
         refreshDomesticTradeValueRanking();
         refreshDomesticRisingRanking();
         refreshDomesticFallingRanking();
+        refreshPopularStocks(); 
         // 해외 주식 갱신 코드 (필요한 경우)
     }
 }

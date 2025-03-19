@@ -68,8 +68,13 @@ export function HomeView() {
           }),
         );
 
-        const newCategoryData: CategoryDataType = { ...categoryData };
-
+        const newCategoryData: CategoryDataType = ALL_ENDPOINTS.reduce(
+          (acc, endpoint) => ({
+            ...acc,
+            [endpoint]: [],
+          }),
+          {} as CategoryDataType,
+        );
         results.forEach(({ category, data }) => {
           if (data.resultCode === '0' && Array.isArray(data.stocks)) {
             const transformedData: TransformedStockItem[] = data.stocks.map(
@@ -106,7 +111,7 @@ export function HomeView() {
     }
 
     fetchAllCategoryData();
-  }, [lastRefreshed, categoryData]);
+  }, [lastRefreshed]);
 
   const handleTabChange = (tabType: Endpoint) => {
     setActiveTab(tabType);
@@ -136,6 +141,7 @@ export function HomeView() {
       {initialLoading && (
         <LoadingIndicator>
           <Image
+            unoptimized={true}
             src="/images/loading.gif"
             alt="데이터를 불러오는 중입니다..."
             width={50}
