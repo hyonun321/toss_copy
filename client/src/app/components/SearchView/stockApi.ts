@@ -46,3 +46,37 @@ export const searchStocks = async (query: string): Promise<BaseStock[]> => {
     return [];
   }
 };
+// 최근 검색어 저장
+export const saveSearchQuery = async (email: string, query: string) => {
+  try {
+    await axios.post(`${API_BASE_URL}/search/history`, null, {
+      params: { email, query },
+    });
+  } catch (error) {
+    console.error('검색어 저장 실패:', error);
+  }
+};
+
+// 최근 검색어 가져오기
+export const getSearchHistory = async (email: string): Promise<string[]> => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/search/history`, {
+      params: { email },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('검색어 조회 실패:', error);
+    return [];
+  }
+};
+
+// 검색어 삭제
+export const deleteSearchQuery = async (email: string, query: string) => {
+  try {
+    await axios.delete(`${API_BASE_URL}/search/history`, {
+      params: { email, query },
+    });
+  } catch (error) {
+    console.error('검색어 삭제 실패:', error);
+  }
+};
