@@ -5,10 +5,17 @@ import { TopBar } from '@/app/components/SettingTopbar/TopBar';
 import { UserInfo } from '@/app/components/UserInfo/UserInfo';
 import { Option } from '@/app/components/Option/Option';
 import styles from './page.module.css';
+import BottomSheet from '@/app/components/BottomSheet/BottomSheet';
+import { useState } from 'react';
+import BottomSheetContent from '@/app/components/BottomSheet/BottomSheetContent';
 
 const SettingPage = () => {
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
 
+  const handleLogout = () => {
+    setIsOpen(true);
+  };
   return (
     <div className={styles.settingPage}>
       <TopBar />
@@ -34,8 +41,21 @@ const SettingPage = () => {
         <Option
           iconSrc="/images/unlock.png"
           label="로그아웃"
-          onClick={() => router.push('/password-change')}
+          onClick={handleLogout}
         />
+        {isOpen && (
+          <BottomSheet height="20vh">
+            <BottomSheetContent
+              title="로그아웃 하시겠습니까?"
+              leftIcon="/images/cancel.png"
+              leftButtonText="취소"
+              rightButtonText="로그아웃"
+              onClose={() => setIsOpen(false)}
+              onLeftClick={() => console.log('취소 클릭')}
+              onRightClick={() => console.log('삭제 클릭')}
+            />
+          </BottomSheet>
+        )}
       </div>
     </div>
   );
