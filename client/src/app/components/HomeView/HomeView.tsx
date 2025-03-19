@@ -171,7 +171,7 @@ export function HomeView() {
           />
         ))}
       </StockListContainer>
-      <BottomNavigation />
+      <BottomNavigation state="home" />
     </PageContainer>
   );
 }
