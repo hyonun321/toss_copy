@@ -1,19 +1,25 @@
 'use client';
 
-import Image from 'next/image';
-import styles from './TobBar.module.css';
+import { useRouter } from 'next/navigation';
+import { TopBarContainer, BackIcon, Title } from './TobBar.style';
 
 export const TopBar = () => {
+  const router = useRouter();
+
+  const handleBackClick = () => {
+    router.push('/home');
+  };
+
   return (
-    <div className={styles.topBar}>
-      <Image
-        className={styles.backIcon}
+    <TopBarContainer>
+      <BackIcon
         width={32}
         height={32}
         alt="Back"
         src="/images/arrow-left.png"
+        onClick={handleBackClick}
       />
-      <div className={styles.title}>설정</div>
-    </div>
+      <Title>설정</Title>
+    </TopBarContainer>
   );
 };

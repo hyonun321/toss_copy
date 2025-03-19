@@ -1,6 +1,16 @@
+// Option.tsx
+'use client';
+
 import { useState } from 'react';
-import Image from 'next/image';
-import styles from './Option.module.css';
+import {
+  OptionContainer,
+  OptionContent,
+  StyledIcon,
+  Label,
+  ToggleContainer,
+  Knob,
+  ChevronIcon,
+} from './Option.style';
 
 interface OptionProps {
   iconSrc: string;
@@ -28,34 +38,25 @@ export const Option = ({
   };
 
   return (
-    <div className={styles.optionContainer}>
-      <div className={styles.optionContent} onClick={onClick}>
-        <Image
-          className={styles.icon}
-          width={24}
-          height={24}
-          alt={label}
-          src={iconSrc}
-        />
-        <div className={styles.label}>{label}</div>
-      </div>
+    <OptionContainer onClick={onClick}>
+      <OptionContent>
+        <StyledIcon width={24} height={24} alt={label} src={iconSrc} />
+        <Label>{label}</Label>
+      </OptionContent>
+
       {hasToggle ? (
-        <div
-          className={`${styles.toggle} ${isActive ? styles.active : ''}`}
-          onClick={handleToggle}
-        >
-          <div className={styles.knob} />
-        </div>
+        <ToggleContainer isActive={isActive} onClick={handleToggle}>
+          <Knob isActive={isActive} />
+        </ToggleContainer>
       ) : (
-        <Image
-          className={styles.chevronIcon}
+        <ChevronIcon
           width={24}
           height={24}
-          alt="Arrow"
+          alt="화살표"
           src="/images/chevron-right.png"
           onClick={onClick}
         />
       )}
-    </div>
+    </OptionContainer>
   );
 };

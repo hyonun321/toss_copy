@@ -14,5 +14,7 @@
   <select id="selectSalt" parameterType="String" resultType="SaltInfo">
   	select * from saltInfo where email=#{email}
   </select>
-  
+  <update id="updateSalt" parameterType="SaltInfo">
+	UPDATE saltInfo SET salt = #{salt} WHERE email = #{email}
+</update>
 </mapper>

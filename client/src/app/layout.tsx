@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 
-// import './globals.css';
 import { ResponsiveWrapper } from './components/ResponsiveWrapper';
 import { ClientGlobalStyles } from './components/ClientGlobalStyles';
 import { geistSans, geistMono } from './theme/fonts';

@@ -1,5 +1,16 @@
 import React from 'react';
-import styles from './BottomSheetContent.module.css';
+import {
+  BottomSheetContainer,
+  TopBar,
+  Title,
+  LeftIcon,
+  ImageContainer,
+  StyledImage,
+  Description,
+  ButtonContainer,
+  LeftButton,
+  RightButton,
+} from './BottomSheetContent.style';
 
 interface BottomSheetContentProps {
   title: string;
@@ -27,44 +38,35 @@ const BottomSheetContent: React.FC<BottomSheetContentProps> = ({
   onRightClick,
 }) => {
   return (
-    <div className={styles.bottomSheetContainer}>
+    <BottomSheetContainer>
       {/* 상단 바 */}
-      <div className={styles.topBar}>
+      <TopBar>
         {leftIcon && (
-          <img
+          <LeftIcon
+            width={25}
+            height={25}
             src={leftIcon}
             alt="icon"
-            className={styles.leftIcon}
             onClick={onClose} // 왼쪽 아이콘 클릭 시 모달 닫기
           />
         )}
-        <h2 className={styles.title}>{title}</h2>
-      </div>
+        <Title>{title}</Title>
+      </TopBar>
 
       {/* 이미지 & 설명 */}
       {imageSrc && (
-        <div className={styles.imageContainer}>
-          <img src={imageSrc} alt={imageAlt} className={styles.image} />
-          {description && <p className={styles.description}>{description}</p>}
-        </div>
+        <ImageContainer>
+          <StyledImage height={100} width={100} src={imageSrc} alt={imageAlt} />
+          {description && <Description>{description}</Description>}
+        </ImageContainer>
       )}
 
       {/* 버튼 2개 */}
-      <div className={styles.buttonContainer}>
-        <button
-          className={`${styles.button} ${styles.leftButton}`}
-          onClick={onLeftClick}
-        >
-          {leftButtonText}
-        </button>
-        <button
-          className={`${styles.button} ${styles.rightButton}`}
-          onClick={onRightClick}
-        >
-          {rightButtonText}
-        </button>
-      </div>
-    </div>
+      <ButtonContainer>
+        <LeftButton onClick={onLeftClick}>{leftButtonText}</LeftButton>
+        <RightButton onClick={onRightClick}>{rightButtonText}</RightButton>
+      </ButtonContainer>
+    </BottomSheetContainer>
   );
 };
 

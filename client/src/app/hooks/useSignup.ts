@@ -1,10 +1,11 @@
-// app/hooks/useSignup.ts
+// hooks/useSignup.ts
 import { useState } from 'react';
+import { useAuthStore } from '@/app/stores/authStore';
 
 interface SignupData {
   email: string;
   nickname: string;
-  pwd: string; // 백엔드는 'pwd'를 사용함
+  pwd: string;
 }
 
 export function useSignup() {
@@ -12,67 +13,40 @@ export function useSignup() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  // Zustand 스토어에서 회원가입 및 로그인 함수 가져오기
+  const { signup: storeSignup, login: storeLogin } = useAuthStore();
+
   const registerUser = async (data: SignupData) => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:8080/insertMember', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+      // 중앙화된 회원가입 로직 사용
+      const result = await storeSignup(data);
 
-      const result = await response.text();
-
-      if (result.includes('가입을 환영합니다')) {
+      if (result.success) {
         setSuccess(true);
         return true;
       } else {
-        setError(result || '회원가입에 실패했습니다.');
+        setError(result.error || '회원가입에 실패했습니다.');
         return false;
       }
-    } catch (err) {
-      console.error('Signup error:', err);
-      setError('서버 연결에 실패했습니다.');
-      return false;
     } finally {
       setLoading(false);
     }
   };
+
+  // 기존 코드와의 호환성을 위해 autoLogin 함수도 Zustand 스토어 사용
   async function autoLogin(email: string, password: string) {
     try {
-      const response = await fetch('http://localhost:8080/tokenLogin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          pwd: password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.Authorization && data.nickname) {
-        if (
-          typeof window !== 'undefined' &&
-          typeof sessionStorage !== 'undefined'
-        ) {
-          sessionStorage.setItem('authToken', data.Authorization);
-          sessionStorage.setItem('nickname', data.nickname);
-        }
-        return true;
-      }
-      return false;
+      const result = await storeLogin(email, password);
+      return result.success;
     } catch (err) {
-      console.error('Auto login error:', err);
+      console.error('자동 로그인 오류:', err);
       return false;
     }
   }
+
   return {
     registerUser,
     autoLogin,

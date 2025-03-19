@@ -11,12 +11,17 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import com.shop.cafe.dto.Login;
 import com.shop.cafe.dto.Member;
+import com.shop.cafe.dto.PasswordChangeRequest;
 import com.shop.cafe.service.MemberService;
+import com.shop.cafe.service.StockService;
+
+import java.util.logging.Logger;
 
 @RestController
 @CrossOrigin({"http://127.0.0.1:5500/","http://localhost:3000"})
 public class MemberController {
-	
+    private static final Logger logger = Logger.getLogger(MemberService.class.getName());
+    
 	@Autowired
 	private MemberService memberService;
 	
@@ -52,6 +57,22 @@ public class MemberController {
 			responseMap.put("msg", "다시 로그인 해주세요");
 		}
 		return responseMap;
+	}
+	
+	@PostMapping("validateToken")
+	public Map<String, Boolean> validateToken(@RequestHeader String authorization) {
+	    Map<String, Boolean> response = new HashMap<>();
+	    
+	    try {
+	        boolean isValid = memberService.validateToken(authorization);
+	        logger.severe("유저 토큰 로그인 검증" +authorization);
+	        response.put("valid", isValid);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        response.put("valid", false);
+	    }
+	    
+	    return response;
 	}
 	
 	@PostMapping("login")
@@ -101,7 +122,7 @@ public class MemberController {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return "email과 pwd 확인해 주세요";
+			return "동일한 닉네임이 존재합니다.";
 		}
 	}
 	
@@ -116,6 +137,31 @@ public class MemberController {
 			e.printStackTrace();
 			return "email과 pwd 확인해 주세요";
 		}
+	}
+	
+	
+	@PostMapping("changePassword")
+	public String changePassword(@RequestBody Map<String, String> request, @RequestHeader String authorization) {
+	    try {
+	        String email = request.get("email");
+	        String currentPassword = request.get("currentPassword");
+	        String newPassword = request.get("newPassword");
+	        
+	        if (email == null || currentPassword == null || newPassword == null) {
+	            return "필수 정보가 누락되었습니다.";
+	        }
+	        
+	        boolean success = memberService.changePassword(email, currentPassword, newPassword, authorization);
+	        
+	        if (success) {
+	            return "ok";
+	        } else {
+	            return "현재 비밀번호가 일치하지 않습니다.";
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return e.getMessage();
+	    }
 	}
 
 }
