@@ -1,102 +1,102 @@
 /* 바텀시트 전체 */
 .bottomSheetContainer {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 16px 0px;
-    background: white;
-    border-radius: 16px 16px 0 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px 0px;
+  background: white;
+  border-radius: 16px 16px 0 0;
 }
 
 /* 상단 바 */
 .topBar {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    top: 30px;
-    height: 56px;
-    margin-bottom: 16px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 30px;
+  height: 56px;
+  margin-bottom: 16px;
 }
 
 /* 제목 */
 .title {
-    font-size: 18px;
-    font-weight: bold;
-    color: #131214;
+  font-size: 18px;
+  font-weight: bold;
+  color: #131214;
 }
 
 /* 왼쪽 아이콘 */
 .leftIcon {
-    width: 28px;
-    height: 28px;
-    position: absolute;
-    left: 8px;
+  width: 28px;
+  height: 28px;
+  position: absolute;
+  left: 8px;
 }
 
 /* 이미지 컨테이너 */
 .imageContainer {
-    display: inline-block;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 70px 30px;
+  display: inline-block;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 70px 30px;
 }
 
 /* 이미지 */
 .image {
-    width: 120px;
-    height: 120px;
-    object-fit: contain;
-    border-radius: 12px;
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  border-radius: 12px;
 }
 
 /* 설명 */
 .description {
-    margin-top: 15px;
-    font-size: 18px;
-    color: #0a0a0a;
+  margin-top: 15px;
+  font-size: 18px;
+  color: #0a0a0a;
 }
 
 /* 버튼 컨테이너 */
 .buttonContainer {
-    padding: 16px;
-    width: 100%;
-    display: flex;
-    position: absolute;
-    justify-content: space-between;
-    bottom: 5px;
+  padding: 16px;
+  width: 100%;
+  display: flex;
+  position: absolute;
+  justify-content: space-between;
+  bottom: 5px;
 }
 
 /* 버튼 공통 스타일 */
 .button {
-    flex: 1;
-    height: 48px;
-    border-radius: 24px;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    transition: 0.2s;
+  flex: 1;
+  height: 48px;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
 /* 왼쪽 버튼 (연한 배경) */
 .leftButton {
-    background: #ffe8e8;
-    color: #df0417;
-    margin-right: 8px;
+  background: #ffe8e8;
+  color: #df0417;
+  margin-right: 8px;
 }
 
 /* 오른쪽 버튼 (강조된 배경) */
 .rightButton {
-    background: #df0417;
-    color: white;
+  background: #df0417;
+  color: white;
 }
 
 /* 버튼 호버 효과 */
 .button:hover {
-    opacity: 0.8;
+  opacity: 0.8;
 }
