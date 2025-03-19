@@ -3,7 +3,7 @@ import { useMyFunnel } from './funnelcontext';
 import React, { useState } from 'react';
 import REGISTER from './registerview';
 import { useRouter } from 'next/navigation';
-import { useSignup } from '../hooks/useSignup';
+import { useSignup } from '../../hooks/useSignup';
 
 const RegisterStep: React.FC = () => {
   const handleRouteBack = () => {

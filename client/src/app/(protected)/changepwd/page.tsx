@@ -1,10 +1,10 @@
 'use client';
 
-import REGISTER from '@/app/register/registerview';
+import REGISTER from '@/app/(public)/register/registerview';
 import React from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function ChangeName() {
+export default function ChangePwd() {
   const router = useRouter();
   const handleBackRoute = () => {
     router.push('/setting');
@@ -14,13 +14,13 @@ export default function ChangeName() {
   };
   return (
     <REGISTER
-      title="닉네임 변경"
+      title="비밀번호 변경"
       onActionClick={handleBackRoute}
-      text="닉네임을 입력하세요"
-      placeholder="닉네임 입력"
+      text="비밀번호를 입력하세요"
+      placeholder="비밀번호"
       onNext={handleRoute}
       buttonText="완료"
-      validationType="nickname"
+      validationType="password"
     />
   );
 }

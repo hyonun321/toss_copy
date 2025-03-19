@@ -26,6 +26,7 @@ import {
   formatPercentage,
 } from '@/app/utils/formatters';
 import Image from 'next/image';
+import { useAuthStore } from '@/app/stores/authStore';
 
 export function HomeView() {
   const [activeTab, setActiveTab] = useState<Endpoint>('domestic/trade-value');
@@ -41,8 +42,7 @@ export function HomeView() {
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<number>(Date.now());
-  const nickname =
-    typeof window !== 'undefined' ? sessionStorage.getItem('nickname') : null;
+  const { nickname } = useAuthStore();
   const refreshData = () => {
     setLastRefreshed(Date.now());
   };
