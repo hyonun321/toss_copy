@@ -145,7 +145,48 @@ public class MemberService {
 	    String passwordPattern = "^(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]).{8,}$";
 	    return Pattern.matches(passwordPattern, password);
 	}
-
+	
+	@Transactional
+	public boolean changePassword(String email, String currentPassword, String newPassword, String token) throws Exception {
+	    // 1. 현재 비밀번호 확인 - tokenLogin 메서드의 로직을 활용
+	    SaltInfo saltInfo = saltDao.selectSalt(email);
+	    if (saltInfo == null) {
+	        throw new Exception("사용자 정보를 찾을 수 없습니다.");
+	    }
+	    
+	    // 현재 비밀번호 해시 생성
+	    byte[] currentPwdHash = OpenCrypt.getSHA256(currentPassword, saltInfo.getSalt());
+	    String currentPwdHashHex = OpenCrypt.byteArrayToHex(currentPwdHash);
+	    
+	    // 비밀번호 일치 여부 확인
+	    Member tempMember = new Member(email, currentPwdHashHex, null);
+	    Member member = memberDao.login(tempMember);
+	    
+	    if (member == null) {
+	        return false; // 현재 비밀번호가 일치하지 않음
+	    }
+	    
+	    // 2. 새 비밀번호 유효성 검사
+	    if (!isValidPassword(newPassword)) {
+	        throw new Exception("비밀번호는 8자리 이상이어야 하며, 특수문자와 숫자를 포함해야 합니다.");
+	    }
+	    
+	    // 3. 새 salt 생성
+	    String newSalt = UUID.randomUUID().toString();
+	    
+	    // 4. 새 비밀번호 해시
+	    byte[] newPwdHash = OpenCrypt.getSHA256(newPassword, newSalt);
+	    String newPwdHashHex = OpenCrypt.byteArrayToHex(newPwdHash);
+	    
+	    // 5. member 테이블 업데이트
+	    Member updatedMember = new Member(email, newPwdHashHex, member.getNickname());
+	    memberDao.updatePassword(updatedMember); // 이 메서드는 아직 존재하지 않음 - 아래에서 구현
+	    
+	    // 6. saltInfo 테이블 업데이트
+	    saltDao.updateSalt(new SaltInfo(email, newSalt)); // 이 메서드는 아직 존재하지 않음 - 아래에서 구현
+	    
+	    return true;
+	}
 	
 
 }

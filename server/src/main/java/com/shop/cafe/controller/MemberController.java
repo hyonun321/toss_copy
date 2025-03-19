@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import com.shop.cafe.dto.Login;
 import com.shop.cafe.dto.Member;
+import com.shop.cafe.dto.PasswordChangeRequest;
 import com.shop.cafe.service.MemberService;
 import com.shop.cafe.service.StockService;
 
@@ -121,7 +122,7 @@ public class MemberController {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return "email과 pwd 확인해 주세요";
+			return "동일한 닉네임이 존재합니다.";
 		}
 	}
 	
@@ -136,6 +137,31 @@ public class MemberController {
 			e.printStackTrace();
 			return "email과 pwd 확인해 주세요";
 		}
+	}
+	
+	
+	@PostMapping("changePassword")
+	public String changePassword(@RequestBody Map<String, String> request, @RequestHeader String authorization) {
+	    try {
+	        String email = request.get("email");
+	        String currentPassword = request.get("currentPassword");
+	        String newPassword = request.get("newPassword");
+	        
+	        if (email == null || currentPassword == null || newPassword == null) {
+	            return "필수 정보가 누락되었습니다.";
+	        }
+	        
+	        boolean success = memberService.changePassword(email, currentPassword, newPassword, authorization);
+	        
+	        if (success) {
+	            return "ok";
+	        } else {
+	            return "현재 비밀번호가 일치하지 않습니다.";
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return e.getMessage();
+	    }
 	}
 
 }

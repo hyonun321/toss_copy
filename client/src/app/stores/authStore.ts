@@ -1,13 +1,17 @@
 // stores/authStore.ts
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { isValidPassword } from '../utils/validation';
 
 interface LoginResponse {
   nickname?: string;
   Authorization?: string;
   msg?: string;
 }
-
+interface PasswordChangeRequest {
+  currentPassword: string;
+  newPassword: string;
+}
 interface AuthState {
   isAuthenticated: boolean;
   email: string | null;
@@ -28,6 +32,12 @@ interface AuthState {
   setAuth: (token: string, email: string, nickname: string) => void;
   clearAuth: () => void;
   checkAuth: () => Promise<boolean>;
+  changeNickname: (
+    newNickname: string,
+  ) => Promise<{ success: boolean; error?: string }>;
+  changePassword: (
+    data: PasswordChangeRequest,
+  ) => Promise<{ success: boolean; error?: string }>;
 }
 const createCustomStorage = () => {
   if (typeof window !== 'undefined') {
@@ -211,6 +221,117 @@ export const useAuthStore = create<AuthState>()(
           console.error('인증 확인 실패:', error);
           set({ isAuthenticated: false });
           return false;
+        }
+      },
+
+      changeNickname: async (newNickname: string) => {
+        const { email, token } = get();
+
+        if (!email || !token) {
+          return {
+            success: false,
+            error: '로그인 상태에서만 닉네임을 변경할 수 있습니다.',
+          };
+        }
+
+        try {
+          // 서버에 닉네임 변경 요청
+          const response = await fetch('http://localhost:8080/updateMember', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: token,
+            },
+            body: JSON.stringify({
+              email: email, // 식별자로 이메일 사용
+              nickname: newNickname,
+              // pwd는 빼고 요청 (비밀번호 변경이 아니므로)
+            }),
+          });
+
+          if (!response.ok) {
+            return {
+              success: false,
+              error: '서버 오류가 발생했습니다.',
+            };
+          }
+
+          const result = await response.text();
+
+          if (result === 'ok') {
+            // 닉네임 변경 성공 - 로컬 상태 업데이트
+            set({ nickname: newNickname });
+
+            // sessionStorage도 업데이트 (기존 코드와의 호환성)
+            if (typeof window !== 'undefined') {
+              sessionStorage.setItem('nickname', newNickname);
+            }
+
+            return { success: true };
+          } else {
+            return {
+              success: false,
+              error: result || '닉네임 변경에 실패했습니다.',
+            };
+          }
+        } catch (error) {
+          console.error('닉네임 변경 오류:', error);
+          return {
+            success: false,
+            error: '서버 연결에 실패했습니다.',
+          };
+        }
+      },
+      changePassword: async (data: PasswordChangeRequest) => {
+        const { email, token } = get();
+
+        if (!email || !token) {
+          return {
+            success: false,
+            error: '로그인 상태에서만 비밀번호를 변경할 수 있습니다.',
+          };
+        }
+        // 비밀번호 유효성 검사
+        if (!isValidPassword(data.newPassword)) {
+          return {
+            success: false,
+            error:
+              '비밀번호는 8자리 이상이어야 하며, 특수문자와 숫자를 포함해야 합니다.',
+          };
+        }
+
+        try {
+          // 서버에 비밀번호 변경 요청
+          const response = await fetch('http://localhost:8080/changePassword', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: token,
+            },
+            body: JSON.stringify({
+              email: email,
+              currentPassword: data.currentPassword,
+              newPassword: data.newPassword,
+            }),
+          });
+
+          const result = await response.text();
+
+          if (result === 'ok') {
+            // 비밀번호 변경 성공 - 토큰도 재발급될 수 있으므로 서버에서 응답을 받아야 함
+            return { success: true };
+          } else {
+            return {
+              success: false,
+              error: result || '비밀번호 변경에 실패했습니다.',
+            };
+          }
+        } catch (error) {
+          console.error('비밀번호 변경 오류:', error);
+          return {
+            success: false,
+            error: '서버 연결에 실패했습니다.',
+          };
         }
       },
     }),
