@@ -25,7 +25,6 @@ export function SearchResults({
   searchQuery,
   onStockSelect,
 }: SearchResultsProps) {
-  console.log(searchQuery);
   const highlightMatch = (text: string) => {
     if (!searchQuery) return text;
 
