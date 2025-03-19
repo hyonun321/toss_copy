@@ -6,6 +6,9 @@ import { useRouter } from 'next/navigation';
 import { useSignup } from '../hooks/useSignup';
 
 const RegisterStep: React.FC = () => {
+  const handleRouteBack = () => {
+    funnel.history.go(-1);
+  };
   const funnel = useMyFunnel();
   const router = useRouter();
   const { registerUser, loading, error, autoLogin } = useSignup();
@@ -37,6 +40,8 @@ const RegisterStep: React.FC = () => {
     <funnel.Render
       email={({ history }) => (
         <REGISTER
+          title="회원가입"
+          onActionClick={handleRouteBack}
           text="이메일을 입력하세요"
           placeholder="이메일 입력"
           onNext={(nickname) => history.push('nickname', { nickname })}
@@ -46,6 +51,8 @@ const RegisterStep: React.FC = () => {
       )}
       nickname={({ history }) => (
         <REGISTER
+          title="회원가입"
+          onActionClick={handleRouteBack}
           text="닉네임을 입력하세요"
           placeholder="닉네임 입력"
           onNext={(password) => history.push('password', { password })}
@@ -55,6 +62,8 @@ const RegisterStep: React.FC = () => {
       )}
       password={({ context }) => (
         <REGISTER
+          title="회원가입"
+          onActionClick={handleRouteBack}
           text="비밀번호를 입력하세요"
           placeholder="비밀번호 입력"
           buttonText="회원가입"

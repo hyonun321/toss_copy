@@ -8,21 +8,25 @@ import Title from '@/app/components/Title/Title';
 import styles from './page.module.css';
 
 type RegisterProps = {
+  title: string;
   text: string;
   placeholder: string;
   onNext: (value: string) => void;
   buttonText: string;
   validationType: ValidationType;
+  onActionClick?: () => void;
   isLoading?: boolean;
   serverError?: string | null; // 서버 에러 메시지를 위한 선택적 prop 추가
 };
 
 const REGISTER: React.FC<RegisterProps> = ({
+  title,
   text,
   placeholder,
   onNext,
   buttonText,
   validationType,
+  onActionClick,
   isLoading = false,
   serverError,
 }) => {
@@ -50,7 +54,7 @@ const REGISTER: React.FC<RegisterProps> = ({
 
   return (
     <div className={styles.container}>
-      <AuthHeader title="회원가입" />
+      <AuthHeader title={title} onActionClick={onActionClick} />
       <div className={styles.title}>
         <Title>{text}</Title>
       </div>
