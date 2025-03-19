@@ -94,27 +94,37 @@ export function CategoryTabs(props: CategoryTabsProps) {
     return () => window.removeEventListener('resize', updateIndicator);
   }, [activeTabLabel, displayTabs]);
 
-  const handleTabClick = (tab: TabOption) => {
-    setActiveTabState(tab);
+  const handleTabClick = (tabLabel: string) => {
+    setActiveTabLabel(tabLabel);
 
-    // 상위 컴포넌트에 탭 변경 알림
-    if (onTabChange) {
-      onTabChange(TAB_TO_ENDPOINT[tab]);
+    if (isUsingCustomTabs) {
+      // Find the corresponding ID in custom tabs
+      const tab = props.customTabs.find((t) => t.label === tabLabel);
+      if (tab) {
+        onTabChange(tab.id);
+      }
+    } else {
+      // Check if tabLabel is a key in TAB_TO_ENDPOINT
+      if (tabLabel in TAB_TO_ENDPOINT) {
+        const endpoint =
+          TAB_TO_ENDPOINT[tabLabel as keyof typeof TAB_TO_ENDPOINT];
+        onTabChange(endpoint as Endpoint);
+      }
     }
   };
 
   return (
     <TabsContainer>
-      {TAB_OPTIONS.map((tab, index) => (
+      {displayTabs.map((tabLabel, index) => (
         <Tab
-          key={tab}
+          key={tabLabel}
           ref={(el) => {
             tabRefs.current[index] = el;
           }}
-          active={activeTabState === tab}
-          onClick={() => handleTabClick(tab as TabOption)}
+          active={activeTabLabel === tabLabel}
+          onClick={() => handleTabClick(tabLabel)}
         >
-          {tab}
+          {tabLabel}
         </Tab>
       ))}
       <CustomTabIndicator
