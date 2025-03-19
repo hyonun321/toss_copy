@@ -8,19 +8,23 @@ import Title from '@/app/components/Title/Title';
 import styles from './page.module.css';
 
 type RegisterProps = {
+  title: string;
   text: string;
   placeholder: string;
   onNext: (value: string) => void;
   buttonText: string;
   validationType: ValidationType;
+  onActionClick?: () => void;
 };
 
 const REGISTER: React.FC<RegisterProps> = ({
+  title,
   text,
   placeholder,
   onNext,
   buttonText,
   validationType,
+  onActionClick,
 }) => {
   const [resizeHeight, setResizeHeight] = useState<number>(0);
   const { value, error, handleChange } = useValidation(validationType);
@@ -46,7 +50,7 @@ const REGISTER: React.FC<RegisterProps> = ({
 
   return (
     <div className={styles.container}>
-      <AuthHeader title="회원가입" />
+      <AuthHeader title={title} onActionClick={onActionClick} />
       <div className={styles.title}>
         <Title>{text}</Title>
       </div>

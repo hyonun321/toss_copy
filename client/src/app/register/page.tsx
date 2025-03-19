@@ -4,11 +4,16 @@ import React from 'react';
 import REGISTER from './registerview';
 
 const RegisterStep: React.FC = () => {
+  const handleRouteBack = () => {
+    funnel.history.go(-1);
+  };
   const funnel = useMyFunnel();
   return (
     <funnel.Render
       email={({ history }) => (
         <REGISTER
+          title="회원가입"
+          onActionClick={handleRouteBack}
           text="이메일을 입력하세요"
           placeholder="이메일 입력"
           onNext={(nickname) => history.push('nickname', { nickname })}
@@ -18,6 +23,8 @@ const RegisterStep: React.FC = () => {
       )}
       nickname={({ history }) => (
         <REGISTER
+          title="회원가입"
+          onActionClick={handleRouteBack}
           text="닉네임을 입력하세요"
           placeholder="닉네임 입력"
           onNext={(password) => history.push('password', { password })}
@@ -27,12 +34,14 @@ const RegisterStep: React.FC = () => {
       )}
       password={({ context }) => (
         <REGISTER
+          title="회원가입"
+          onActionClick={handleRouteBack}
           text="비밀번호를 입력하세요"
           placeholder="비밀번호 입력"
           buttonText="회원가입"
           validationType="password"
-          onNext={(plantLocation) =>
-            console.log('등록 완료:', { ...context, plantLocation })
+          onNext={(password) =>
+            console.log('등록 완료:', { ...context, password })
           }
         />
       )}
