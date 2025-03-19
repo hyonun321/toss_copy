@@ -73,6 +73,16 @@ public class MemberService {
 		return null;		 
 	}
 	
+	public boolean validateToken(String token) {
+	    try {
+	        // Use the existing checkToken method from LoginDao
+	        Login login = loginDao.checkToken(token);
+	        return login != null;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
 	public Member login(Member m) throws Exception {
 		return memberDao.login(m);
 	}
