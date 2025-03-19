@@ -52,7 +52,7 @@ const SettingPage = () => {
               leftButtonText="취소"
               rightButtonText="로그아웃"
               onClose={() => setIsOpen(false)}
-              onLeftClick={() => console.log('취소 클릭')}
+              onLeftClick={() => setIsOpen(false)}
               onRightClick={() => {
                 logout();
                 router.push('/');
