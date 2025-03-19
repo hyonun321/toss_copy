@@ -13,12 +13,35 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
   });
 }
 
-export function isAuthenticated(): boolean {
+export async function isAuthenticated(): Promise<boolean> {
   if (typeof window !== 'undefined' && typeof sessionStorage !== 'undefined') {
-    return !!sessionStorage.getItem('authToken');
+    const token = sessionStorage.getItem('authToken');
+
+    if (!token) return false;
+
+    try {
+      const response = await fetch('http://localhost:8080/validateToken', {
+        method: 'POST',
+        headers: {
+          Authorization: token,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.valid === true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Token validation error:', error);
+      return false;
+    }
   }
   return false;
 }
+
 export async function logout(): Promise<void> {
   const token = sessionStorage.getItem('authToken');
 
