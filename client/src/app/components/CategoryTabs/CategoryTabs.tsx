@@ -1,5 +1,11 @@
 'use client';
-import { useState, useRef, useLayoutEffect, useEffect } from 'react';
+import {
+  useState,
+  useRef,
+  useLayoutEffect,
+  useEffect,
+  useCallback,
+} from 'react';
 import { TabsContainer, Tab, CustomTabIndicator } from './CategoryTabs.style';
 import {
   TAB_OPTIONS,
@@ -8,35 +14,59 @@ import {
   Endpoint,
 } from '@/app/constants/tabMappings';
 
-type TabOption = '거래대금' | '거래량' | '급상승' | '급하락';
-
-interface CategoryTabsProps {
-  onTabChange?: (tabType: Endpoint) => void;
-  activeTab?: Endpoint;
+// Type for custom tabs
+export type CustomTabItem = {
+  id: string;
+  label: string;
+};
+interface DefaultCategoryTabsProps {
+  onTabChange: (tabType: Endpoint) => void;
+  activeTab: Endpoint;
+  customTabs?: never;
 }
 
-export function CategoryTabs({
-  onTabChange,
-  activeTab = 'domestic/trade-value',
-}: CategoryTabsProps) {
-  // 내부 상태와 외부 상태 동기화
-  const [activeTabState, setActiveTabState] = useState<TabOption>(
-    ENDPOINT_TO_TAB[activeTab] || '거래대금',
-  );
+interface CustomCategoryTabsProps {
+  onTabChange: (tabType: string) => void;
+  activeTab: string;
+  customTabs: CustomTabItem[];
+}
+
+type CategoryTabsProps = DefaultCategoryTabsProps | CustomCategoryTabsProps;
+
+export function CategoryTabs(props: CategoryTabsProps) {
+  const { onTabChange, activeTab } = props;
+  const isUsingCustomTabs = 'customTabs' in props && !!props.customTabs;
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-  // 외부 activeTab 변경 시 내부 상태 업데이트
-  useEffect(() => {
-    const mappedTab = ENDPOINT_TO_TAB[activeTab];
-    if (mappedTab && mappedTab !== activeTabState) {
-      setActiveTabState(mappedTab as TabOption);
+  const getInitialTabLabel = useCallback((): string => {
+    if (isUsingCustomTabs) {
+      const tab = props.customTabs.find((t) => t.id === activeTab);
+      return tab ? tab.label : props.customTabs[0].label;
+    } else {
+      return Object.keys(ENDPOINT_TO_TAB).includes(activeTab as string)
+        ? ENDPOINT_TO_TAB[activeTab as keyof typeof ENDPOINT_TO_TAB]
+        : TAB_OPTIONS[0];
     }
-  }, [activeTab, activeTabState]);
+  }, [isUsingCustomTabs, props.customTabs, activeTab]);
+
+  const [activeTabLabel, setActiveTabLabel] =
+    useState<string>(getInitialTabLabel());
+
+  const displayTabs = isUsingCustomTabs
+    ? props.customTabs.map((t) => t.label)
+    : TAB_OPTIONS;
+
+  useEffect(() => {
+    const newLabel = getInitialTabLabel();
+    if (newLabel !== activeTabLabel) {
+      setActiveTabLabel(newLabel);
+    }
+  }, [activeTabLabel, getInitialTabLabel]);
 
   useLayoutEffect(() => {
     const updateIndicator = () => {
-      const activeTabIndex = TAB_OPTIONS.indexOf(activeTabState);
+      const activeTabIndex = (displayTabs as string[]).indexOf(activeTabLabel);
       const activeTabElement = tabRefs.current[activeTabIndex];
 
       if (activeTabElement) {
@@ -62,7 +92,7 @@ export function CategoryTabs({
 
     window.addEventListener('resize', updateIndicator);
     return () => window.removeEventListener('resize', updateIndicator);
-  }, [activeTabState]);
+  }, [activeTabLabel, displayTabs]);
 
   const handleTabClick = (tab: TabOption) => {
     setActiveTabState(tab);

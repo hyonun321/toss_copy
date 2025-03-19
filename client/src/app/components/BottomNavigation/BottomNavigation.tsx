@@ -5,10 +5,12 @@ import { CgProfile } from 'react-icons/cg';
 import { useState } from 'react';
 import { NavLabel, NavButton, NavContainer } from './BottomNavigation.style';
 import { useRouter } from 'next/navigation';
-type NavTab = 'home' | 'mypage';
 
-export function BottomNavigation() {
-  const [activeTab, setActiveTab] = useState<NavTab>('home');
+interface BottomNavigationProps {
+  state: string;
+}
+export function BottomNavigation({ state }: BottomNavigationProps) {
+  const [activeTab, setActiveTab] = useState<string>(state);
   const router = useRouter();
   return (
     <NavContainer>
