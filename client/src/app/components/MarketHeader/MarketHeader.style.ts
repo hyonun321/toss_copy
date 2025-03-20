@@ -10,7 +10,7 @@ export const HeaderContainer = styled.div`
 `;
 
 export const MarketInfoWrapper = styled.div`
-  width: 200px;
+  width: 100%;
   height: 30px;
   overflow: hidden;
   position: relative;
@@ -38,7 +38,7 @@ export const RollingList = styled.ul<{ isAnimating: boolean }>`
 
 export const RollingItem = styled.li`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   height: 30px;
   font-size: 18px;

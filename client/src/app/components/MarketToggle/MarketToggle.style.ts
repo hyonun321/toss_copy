@@ -20,7 +20,7 @@ export const ToggleOption = styled.div<{ isActive: boolean }>`
   height: 100%;
   font-size: 14px;
   font-weight: ${(props) => (props.isActive ? '600' : '400')};
-  color: ${(props) => (props.isActive ? theme.colors.primary : '#888')};
+  color: ${(props) => (props.isActive ? theme.colors.black : '#888')};
   cursor: pointer;
   z-index: 2;
   transition: color 0.3s ease;
