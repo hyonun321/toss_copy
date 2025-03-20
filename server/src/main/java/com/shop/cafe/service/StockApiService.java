@@ -1,5 +1,6 @@
 package com.shop.cafe.service;
 
+import com.shop.cafe.dto.IndexInfo;
 import com.shop.cafe.dto.StockInfo;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -1349,7 +1350,264 @@ private String getExchangeCodeForOverseas(String code) {
         }
     }
     
-    
+    /**
+     * 국내 주요 지수 정보를 가져옵니다. (코스피, 코스닥)
+     */
+    public List<IndexInfo> getDomesticIndices() {
+        try {
+            String token = getToken();
+            if (token == null) {
+                logger.warning("토큰 발급 실패로 정적 국내 지수 데이터 반환");
+                return getFallbackDomesticIndices();
+            }
+            
+            List<IndexInfo> indices = new ArrayList<>();
+            
+            // 코스피 지수 조회 (0001)
+            IndexInfo kospi = getIndexInfo(token, "0001", "코스피");
+            if (kospi != null) {
+                indices.add(kospi);
+            }
+            
+            // 코스닥 지수 조회 (1001)
+            IndexInfo kosdaq = getIndexInfo(token, "1001", "코스닥");
+            if (kosdaq != null) {
+                indices.add(kosdaq);
+            }
+            
+            return indices;
+        } catch (Exception e) {
+            logger.warning("API 호출 실패로 정적 국내 지수 데이터 반환: " + e.getMessage());
+            return getFallbackDomesticIndices();
+        }
+    }
+
+    /**
+     * 개별 지수 정보를 조회합니다.
+     */
+    private IndexInfo getIndexInfo(String token, String indexCode, String indexName) {
+        try {
+            String url = apiUrl + "/uapi/domestic-stock/v1/quotations/inquire-index-price";
+            
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+                .queryParam("FID_COND_MRKT_DIV_CODE", "U")  // 업종(U)
+                .queryParam("FID_INPUT_ISCD", indexCode);   // 코스피(0001), 코스닥(1001) 등
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("authorization", "Bearer " + token);
+            headers.set("appkey", appKey);
+            headers.set("appsecret", appSecret);
+            headers.set("tr_id", "FHPUP02100000");  // 국내업종 현재지수 TR ID
+            headers.set("custtype", "P");
+            
+            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+            
+            ResponseEntity<String> response = restTemplate.exchange(
+                builder.toUriString(),
+                HttpMethod.GET,
+                requestEntity,
+                String.class
+            );
+            
+            if (response.getStatusCode() == HttpStatus.OK) {
+                JSONObject jsonResponse = new JSONObject(response.getBody());
+                
+                if (!jsonResponse.has("output")) {
+                    logger.warning("API 응답에 'output' 필드가 없습니다: " + response.getBody());
+                    return null;
+                }
+                
+                JSONObject outputObj = jsonResponse.getJSONObject("output");
+                
+                // 지수 정보 생성
+                IndexInfo index = new IndexInfo();
+                index.setName(indexName);
+                index.setValue(outputObj.getString("bstp_nmix_prpr"));
+                index.setChange(outputObj.getString("bstp_nmix_prdy_vrss"));
+                index.setChangeRate(outputObj.getString("bstp_nmix_prdy_ctrt"));
+                
+                // 부호에 따라 상승/하락 설정 (1: 상한, 2: 상승, 3: 보합, 4: 하락, 5: 하한)
+                String sign = outputObj.getString("prdy_vrss_sign");
+                index.setNegative(sign.equals("4") || sign.equals("5"));
+                
+                return index;
+            } else {
+                logger.warning("지수 " + indexCode + " 조회 실패: " + response.getStatusCode());
+                return null;
+            }
+        } catch (Exception e) {
+            logger.warning("지수 " + indexCode + " 조회 중 예외 발생: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * 해외 주요 지수 정보를 가져옵니다. (다우존스, 나스닥, S&P 500)
+     */
+    public List<IndexInfo> getOverseasIndices() {
+        try {
+            String token = getToken();
+            if (token == null) {
+                logger.warning("토큰 발급 실패로 정적 해외 지수 데이터 반환");
+                return getFallbackOverseasIndices();
+            }
+            
+            List<IndexInfo> indices = new ArrayList<>();
+            
+            // 다우존스 지수 조회
+            IndexInfo dow = getOverseasIndexInfo(token, ".DJI", "다우존스");
+            if (dow != null) {
+                indices.add(dow);
+            }
+            
+            // 나스닥 지수 조회
+            IndexInfo nasdaq = getOverseasIndexInfo(token, "NDX", "나스닥");
+
+            if (nasdaq != null) {
+                indices.add(nasdaq);
+            }
+            
+            // S&P 500 지수 조회
+            IndexInfo snp = getOverseasIndexInfo(token, "SPX", "S&P 500");
+            if (snp != null) {
+                indices.add(snp);
+            }
+            
+            return indices;
+        } catch (Exception e) {
+            logger.warning("API 호출 실패로 정적 해외 지수 데이터 반환: " + e.getMessage());
+            return getFallbackOverseasIndices();
+        }
+    }
+
+    /**
+     * 개별 해외 지수 정보를 조회합니다.
+     */
+    private IndexInfo getOverseasIndexInfo(String token, String indexCode, String indexName) {
+        try {
+            String url = apiUrl + "/uapi/overseas-price/v1/quotations/inquire-daily-chartprice";
+            
+            // 오늘 날짜와 어제 날짜 계산
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+            Calendar cal = Calendar.getInstance();
+            String today = sdf.format(cal.getTime());
+            cal.add(Calendar.DATE, -7); // 일주일 전 (주말/공휴일 고려)
+            String sevenDaysAgo = sdf.format(cal.getTime());
+            
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+                .queryParam("FID_COND_MRKT_DIV_CODE", "N")  // 해외지수(N)
+                .queryParam("FID_INPUT_ISCD", indexCode)    // 다우(.DJI), 나스닥(.IXIC), S&P 500(.SPX)
+                .queryParam("FID_INPUT_DATE_1", sevenDaysAgo) // 시작일
+                .queryParam("FID_INPUT_DATE_2", today)      // 종료일
+                .queryParam("FID_PERIOD_DIV_CODE", "D");    // 일봉
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("authorization", "Bearer " + token);
+            headers.set("appkey", appKey);
+            headers.set("appsecret", appSecret);
+            headers.set("tr_id", "FHKST03030100");  // 해외지수 시세 TR ID
+            headers.set("custtype", "P");
+            
+            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+            
+            ResponseEntity<String> response = restTemplate.exchange(
+                builder.toUriString(),
+                HttpMethod.GET,
+                requestEntity,
+                String.class
+            );
+            System.out.println("체크해보자 이녀석은"+indexCode+indexName+response);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                JSONObject jsonResponse = new JSONObject(response.getBody());
+                
+                if (!jsonResponse.has("output1")) {
+                    logger.warning("API 응답에 'output1' 필드가 없습니다: " + response.getBody());
+                    return null;
+                }
+                
+                JSONObject outputObj = jsonResponse.getJSONObject("output1");
+                
+                // 지수 정보 생성
+                IndexInfo index = new IndexInfo();
+                index.setName(indexName);
+                index.setValue(outputObj.getString("ovrs_nmix_prpr"));
+                index.setChange(outputObj.getString("ovrs_nmix_prdy_vrss"));
+                index.setChangeRate(outputObj.getString("prdy_ctrt"));
+                
+                // 부호에 따라 상승/하락 설정 (1: 상한, 2: 상승, 3: 보합, 4: 하락, 5: 하한)
+                String sign = outputObj.getString("prdy_vrss_sign");
+                index.setNegative(sign.equals("4") || sign.equals("5"));
+                
+                return index;
+            } else {
+                logger.warning("해외 지수 " + indexCode + " 조회 실패: " + response.getStatusCode());
+                return null;
+            }
+        } catch (Exception e) {
+            logger.warning("해외 지수 " + indexCode + " 조회 중 예외 발생: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * 정적 국내 지수 데이터를 반환합니다.
+     */
+    private List<IndexInfo> getFallbackDomesticIndices() {
+        List<IndexInfo> indices = new ArrayList<>();
+        
+        IndexInfo kospi = new IndexInfo();
+        kospi.setName("코스피");
+        kospi.setValue("2,564.22");
+        kospi.setChange("+20.34");
+        kospi.setChangeRate("0.8");
+        kospi.setNegative(false);
+        indices.add(kospi);
+        
+        IndexInfo kosdaq = new IndexInfo();
+        kosdaq.setName("코스닥");
+        kosdaq.setValue("860.45");
+        kosdaq.setChange("-4.32");
+        kosdaq.setChangeRate("-0.5");
+        kosdaq.setNegative(true);
+        indices.add(kosdaq);
+        
+        return indices;
+    }
+
+    /**
+     * 정적 해외 지수 데이터를 반환합니다.
+     */
+    private List<IndexInfo> getFallbackOverseasIndices() {
+        List<IndexInfo> indices = new ArrayList<>();
+        
+        IndexInfo dow = new IndexInfo();
+        dow.setName("다우존스");
+        dow.setValue("33,921.73");
+        dow.setChange("-411.32");
+        dow.setChangeRate("-1.2");
+        dow.setNegative(true);
+        indices.add(dow);
+        
+        IndexInfo nasdaq = new IndexInfo();
+        nasdaq.setName("나스닥");
+        nasdaq.setValue("17,251.32");
+        nasdaq.setChange("-693.42");
+        nasdaq.setChangeRate("-4.0");
+        nasdaq.setNegative(true);
+        indices.add(nasdaq);
+        
+        IndexInfo snp = new IndexInfo();
+        snp.setName("S&P 500");
+        snp.setValue("4,112.55");
+        snp.setChange("+87.15");
+        snp.setChangeRate("2.1");
+        snp.setNegative(false);
+        indices.add(snp);
+        
+        return indices;
+    }
     
     
     

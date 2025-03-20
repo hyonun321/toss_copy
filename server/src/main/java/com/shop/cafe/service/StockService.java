@@ -2,6 +2,7 @@
 package com.shop.cafe.service;
 
 import com.shop.cafe.dao.StockDao;
+import com.shop.cafe.dto.IndexInfo;
 import com.shop.cafe.dto.StockCodeName;
 import com.shop.cafe.dto.StockInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,7 +144,6 @@ public class StockService {
     // 국내 주식 거래대금 상위 종목 조회
     public List<StockInfo> getDomesticTradeValueRanking() {
         if (needsRefresh(stockDao.getLastUpdated("domestic_trade_value"))) {
-        	System.out.println("거래대금 상위종목 또 갯인한다" + stockDao.getLastUpdated("domestic_trade_value"));
             refreshDomesticTradeValueRanking();
         }
         return stockDao.getStocks("domestic_trade_value");
@@ -320,7 +320,81 @@ public class StockService {
             logger.severe("해외 주식 데이터 갱신 실패: " + e.getMessage());
         }
     }
+
+    // 모든 지수 정보 가져오기
+    public List<IndexInfo> getAllIndices() {
+        if (needsRefresh(stockDao.getAllIndicesLastUpdated())) {
+            refreshAllIndices();
+        }
+        return stockDao.getAllIndices();
+    }
     
+    // 국내 지수 정보 가져오기
+    public List<IndexInfo> getDomesticIndices() {
+        if (needsRefresh(stockDao.getDomesticIndicesLastUpdated())) {
+            refreshDomesticIndices();
+        }
+        return stockDao.getDomesticIndices();
+    }
+    
+    // 해외 지수 정보 가져오기
+    public List<IndexInfo> getOverseasIndices() {
+        if (needsRefresh(stockDao.getOverseasIndicesLastUpdated())) {
+            refreshOverseasIndices();
+        }
+        return stockDao.getOverseasIndices();
+    }
+    
+    // 모든 지수 정보 갱신
+    public void refreshAllIndices() {
+        try {
+            logger.info("모든 지수 정보 갱신 시작...");
+            
+            // 국내 지수 가져오기
+            List<IndexInfo> domesticIndices = stockApiService.getDomesticIndices();
+            stockDao.saveDomesticIndices(domesticIndices);
+            
+            // 해외 지수 가져오기
+            List<IndexInfo> overseasIndices = stockApiService.getOverseasIndices();
+            stockDao.saveOverseasIndices(overseasIndices);
+            
+            // 모든 지수 합치기
+            List<IndexInfo> allIndices = new ArrayList<>();
+            allIndices.addAll(overseasIndices); // 해외 지수를 먼저 넣어서 롤링시 먼저 보이게 함
+            allIndices.addAll(domesticIndices);
+            
+            // 저장
+            stockDao.saveAllIndices(allIndices);
+            
+            logger.info("모든 지수 정보 갱신 완료: " + allIndices.size() + "개 지수");
+        } catch (Exception e) {
+            logger.severe("지수 정보 갱신 실패: " + e.getMessage());
+        }
+    }
+    
+    // 국내 지수 정보 갱신
+    public void refreshDomesticIndices() {
+        try {
+            logger.info("국내 지수 정보 갱신 시작...");
+            List<IndexInfo> indices = stockApiService.getDomesticIndices();
+            stockDao.saveDomesticIndices(indices);
+            logger.info("국내 지수 정보 갱신 완료: " + indices.size() + "개 지수");
+        } catch (Exception e) {
+            logger.severe("국내 지수 정보 갱신 실패: " + e.getMessage());
+        }
+    }
+    
+    // 해외 지수 정보 갱신
+    public void refreshOverseasIndices() {
+        try {
+            logger.info("해외 지수 정보 갱신 시작...");
+            List<IndexInfo> indices = stockApiService.getOverseasIndices();
+            stockDao.saveOverseasIndices(indices);
+            logger.info("해외 지수 정보 갱신 완료: " + indices.size() + "개 지수");
+        } catch (Exception e) {
+            logger.severe("해외 지수 정보 갱신 실패: " + e.getMessage());
+        }
+    }
  // 정기적인 데이터 갱신 (15분마다)
     @Scheduled(fixedRate = 900000) // 15분 = 900,000ms
     public void scheduledDataRefresh() {
@@ -335,7 +409,9 @@ public class StockService {
         refreshOverseasVolumeRanking();
         refreshOverseasRisingRanking();
         refreshOverseasFallingRanking();
-
+        
+        // 지수 갱신
+        refreshAllIndices();
         logger.info("정기 주식 데이터 갱신 완료");
     }
 }
