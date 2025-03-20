@@ -31,7 +31,7 @@ export const SettingPage = () => {
           label="다크 모드"
           hasToggle
           //onToggleChange={() => console.log('다크모드')}
-        />
+        /> */}
         <Option
           iconSrc="/images/user.png"
           label="닉네임 변경"

@@ -826,8 +826,9 @@ private String getExchangeCodeForOverseas(String code) {
                 
                 JSONArray stockArray = jsonResponse.getJSONArray("output2");
                 List<StockInfo> stocks = new ArrayList<>();
-                
-                for (int i = 0; i < stockArray.length(); i++) {
+                int limit = Math.min(stockArray.length(), 30);
+
+                for (int i = 0; i < limit; i++) {
                     JSONObject stockJson = stockArray.getJSONObject(i);
                     
                     // API 응답의 필드명은 실제 API 문서를 참고하여 조정 필요
@@ -896,7 +897,6 @@ private String getExchangeCodeForOverseas(String code) {
                 requestEntity,
                 String.class
             );
-            System.out.println(response);
             if (response.getStatusCode() == HttpStatus.OK) {
                 logger.info("미국 주식 거래대금 상위 조회 성공");
                 
@@ -909,8 +909,9 @@ private String getExchangeCodeForOverseas(String code) {
                 
                 JSONArray stockArray = jsonResponse.getJSONArray("output2");
                 List<StockInfo> stocks = new ArrayList<>();
-                
-                for (int i = 0; i < stockArray.length(); i++) {
+                int limit = Math.min(stockArray.length(), 30);
+
+                for (int i = 0; i < limit; i++) {
                     JSONObject stockJson = stockArray.getJSONObject(i);
                     
                     StockInfo stock = new StockInfo(
@@ -981,7 +982,8 @@ private String getExchangeCodeForOverseas(String code) {
             
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
                 .queryParam("EXCD", "NAS")
-                .queryParam("CNT", "30");  // 최대 30개 데이터 조회
+                .queryParam("CNT", "30")
+                .queryParam("GUBN", "1");  // 최대 30개 데이터 조회
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -1013,8 +1015,9 @@ private String getExchangeCodeForOverseas(String code) {
                 
                 JSONArray stockArray = jsonResponse.getJSONArray("output2");
                 List<StockInfo> stocks = new ArrayList<>();
-                
-                for (int i = 0; i < stockArray.length(); i++) {
+                int limit = Math.min(stockArray.length(), 30);
+
+                for (int i = 0; i < limit; i++) {
                     JSONObject stockJson = stockArray.getJSONObject(i);
                     
                     StockInfo stock = new StockInfo(
@@ -1059,7 +1062,8 @@ private String getExchangeCodeForOverseas(String code) {
             
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
                 .queryParam("EXCD", "NAS")
-        	    .queryParam("CNT", "30");  // 최대 30개 데이터 조회
+        	    .queryParam("CNT", "30")
+        	    .queryParam("GUBN", "0");// 최대 30개 데이터 조회
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -1091,8 +1095,9 @@ private String getExchangeCodeForOverseas(String code) {
                 
                 JSONArray stockArray = jsonResponse.getJSONArray("output2");
                 List<StockInfo> stocks = new ArrayList<>();
-                
-                for (int i = 0; i < stockArray.length(); i++) {
+                int limit = Math.min(stockArray.length(), 30);
+
+                for (int i = 0; i < limit; i++) {
                     JSONObject stockJson = stockArray.getJSONObject(i);
                     
                     StockInfo stock = new StockInfo(
@@ -1169,8 +1174,9 @@ private String getExchangeCodeForOverseas(String code) {
             if (response.getStatusCode() == HttpStatus.OK) {
                 JSONObject jsonResponse = new JSONObject(response.getBody());
                 JSONArray stockArray = jsonResponse.getJSONArray("output2");
-                
-                for (int i = 0; i < stockArray.length(); i++) {
+                int limit = Math.min(stockArray.length(), 30);
+
+                    for (int i = 0; i < limit; i++) {
                     JSONObject stockJson = stockArray.getJSONObject(i);
                     
                     StockInfo stock = new StockInfo(
