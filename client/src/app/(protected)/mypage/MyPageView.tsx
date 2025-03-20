@@ -9,7 +9,6 @@ import { ApiResponse, TransformedStockItem } from '@/app/types';
 import {
   PageContainer,
   StockListContainer,
-  LoadingIndicator,
   ErrorMessage,
 } from './MyPageView.style';
 
@@ -19,7 +18,6 @@ import {
   formatPercentage,
   formatPositiveChange,
 } from '@/app/utils/formatters';
-import Image from 'next/image';
 import { useAuthStore } from '@/app/stores/authStore';
 
 export function MyPageView() {
@@ -62,6 +60,7 @@ export function MyPageView() {
             setInitialLoading(false);
             return;
           }
+          console.log(data);
           const transformedData: TransformedStockItem[] = data.stocks.map(
             (item, index) => ({
               rank: index + 1,
@@ -71,7 +70,7 @@ export function MyPageView() {
               change: formatChange(item.change),
               exchangeCode: item.exchangeCode,
               changePercentage: formatPercentage(item.changeRate.toString()),
-              isPositiveChange: formatPositiveChange(item.change),
+              positiveChange: formatPositiveChange(item.changeRate.toString()),
               isFavorite: true,
             }),
           );
@@ -97,23 +96,30 @@ export function MyPageView() {
     setActiveTab(tabType);
     refreshData();
   };
-
+  // 먼저 필터링
   const filteredStocks = favoriteStocks.filter((stock) => {
     if (activeTab === 'all') return true;
+
+    // 종목 코드가 숫자로만 구성되어 있는지 확인 (국내 주식)
+    const isDomestic = /^\d+$/.test(stock.stockCode);
+
     if (activeTab === 'foreign') {
-      return ['TSLA', 'NVDL', 'S&P 500'].some(
-        (prefix) =>
-          stock.stockCode.includes(prefix) || stock.stockName.includes(prefix),
-      );
+      // 해외 주식 필터링
+      return !isDomestic;
     }
+
     if (activeTab === 'domestic') {
-      return !['TSLA', 'NVDL', 'S&P 500'].some(
-        (prefix) =>
-          stock.stockCode.includes(prefix) || stock.stockName.includes(prefix),
-      );
+      // 국내 주식 필터링
+      return isDomestic;
     }
+
     return true;
   });
+
+  const rerankedStocks = filteredStocks.map((stock, index) => ({
+    ...stock,
+    rank: index + 1,
+  }));
 
   return (
     <PageContainer>
@@ -130,18 +136,6 @@ export function MyPageView() {
           { id: 'domestic', label: '국내주식' },
         ]}
       />
-
-      {initialLoading && (
-        <LoadingIndicator>
-          <Image
-            unoptimized={true}
-            src="/images/loading.gif"
-            alt="데이터를 불러오는 중입니다..."
-            width={50}
-            height={50}
-          />
-        </LoadingIndicator>
-      )}
 
       {error && (
         <ErrorMessage>
@@ -160,7 +154,7 @@ export function MyPageView() {
       )}
 
       <StockListContainer>
-        {filteredStocks.map((stock) => (
+        {rerankedStocks.map((stock) => (
           <StockListItem
             key={`${stock.rank}-${stock.stockCode}`}
             rank={stock.rank}
@@ -169,7 +163,7 @@ export function MyPageView() {
             price={stock.price}
             change={stock.change}
             changePercentage={stock.changePercentage}
-            isPositiveChange={stock.isPositiveChange}
+            isPositiveChange={stock.positiveChange}
             isFavorite={stock.isFavorite}
             refreshData={refreshData}
           />
