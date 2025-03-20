@@ -2,6 +2,7 @@
 package com.shop.cafe.service;
 
 import com.shop.cafe.dao.StockDao;
+import com.shop.cafe.dto.StockCodeName;
 import com.shop.cafe.dto.StockInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -104,42 +105,62 @@ public class StockService {
         }
         return stockDao.getStocks("domestic_falling");
     }
-    
-    public List<StockInfo> getStocksByCodeList(List<String> stockCodes) {
+    public List<StockInfo> getStocksByCodeNameList(List<StockCodeName> stockCodeNames) {
         List<StockInfo> result = new ArrayList<>();
         
-        for (String code : stockCodes) {
-            // 먼저 메모리에서 검색
+        for (StockCodeName pair : stockCodeNames) {
+            String code = pair.getCode();
+            String name = pair.getName();
+            String exchangeCode = pair.getEffectiveExchangeCode();
+            
+            // 메모리에서 먼저 검색
             StockInfo stockInfo = stockDao.getStockByCode(code);
             
             // 메모리에 없거나 데이터가 오래된 경우 API 호출
             if (stockInfo == null || needsRefresh(stockInfo.getLastUpdated())) {
                 try {
-                    // 개별 종목 정보 요청
-                    stockInfo = stockApiService.getStockByCode(code);
+                    // 개별 종목 정보를 코드, 종목명, 거래소 정보와 함께 요청
+                    stockInfo = stockApiService.getStockByCode(code, name, exchangeCode);
                     
                     if (stockInfo != null) {
                         // 결과에 추가
                         result.add(stockInfo);
+                        
+                        // 캐시에 저장 (선택적)
+                        stockDao.saveStockInfo(code, stockInfo);
+                    } else {
+                        // API 호출은 실패했지만 기본 정보를 제공
+                        StockInfo basicInfo = new StockInfo(
+                            code, name, "0", "0", "0", "0", exchangeCode
+                        );
+                        result.add(basicInfo);
                     }
                 } catch (Exception e) {
                     logger.warning("코드 " + code + "에 대한 API 호출 실패: " + e.getMessage());
-                    // 에러가 있어도 다른 코드는 계속 조회
+                    // 에러 발생 시 기본 정보 제공
+                    StockInfo basicInfo = new StockInfo(
+                        code, name, "0", "0", "0", "0", exchangeCode
+                    );
+                    result.add(basicInfo);
                 }
             } else {
+                // 캐시된 정보에 종목명이 없는 경우 설정
+                if (stockInfo.getName() == null || stockInfo.getName().isEmpty()) {
+                    stockInfo.setName(name);
+                }
+                
                 // 메모리에 있는 경우 그대로 사용
                 result.add(stockInfo);
             }
         }
         
-        // 랭크 재설정 (필요시)
+        // 랭크 재설정
         for (int i = 0; i < result.size(); i++) {
             result.get(i).setRank(i + 1);
         }
         
         return result;
     }
-
     // 국내 주식 거래량 데이터 갱신
     public void refreshDomesticVolumeRanking() {
         try {
