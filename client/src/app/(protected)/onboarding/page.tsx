@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { ImageText } from '@/app/components/ImageText/ImageText';
-import styles from './page.module.css';
+import { Container, Slide } from './styles';
 
 const steps = [
   {
@@ -53,7 +53,7 @@ export default function Onboarding() {
       setStep((prev) => {
         const nextStep = prev + 1;
         if (nextStep >= steps.length - 1) {
-          clearInterval(interval); // 마지막 단계에서 인터벌 멈춤
+          clearInterval(interval);
         }
         return nextStep;
       });
@@ -73,23 +73,22 @@ export default function Onboarding() {
   }, [step, handleRoute]);
 
   return (
-    <div className={styles.container}>
+    <Container>
       <AnimatePresence mode="wait">
-        <motion.div
+        <Slide
           key={step}
           initial={{ x: 100, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: -100, opacity: 0 }}
           transition={{ duration: 0.5, ease: 'easeInOut' }}
-          className={styles.slide}
         >
           <ImageText
             imageSrc={steps[step].imageSrc}
             text={steps[step].text}
             enableAnimation={false}
           />
-        </motion.div>
+        </Slide>
       </AnimatePresence>
-    </div>
+    </Container>
   );
 }

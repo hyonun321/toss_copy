@@ -4,11 +4,11 @@ import { useRouter } from 'next/navigation';
 import { TopBar } from '@/app/components/SettingTopbar/TopBar';
 import { UserInfo } from '@/app/components/UserInfo/UserInfo';
 import { Option } from '@/app/components/Option/Option';
-import styles from './page.module.css';
 import BottomSheet from '@/app/components/BottomSheet/BottomSheet';
 import { useState } from 'react';
 import BottomSheetContent from '@/app/components/BottomSheet/BottomSheetContent';
 import { useAuthStore } from '@/app/stores/authStore';
+import { SettingPageContainer, Content, Divider } from './styles';
 
 const SettingPage = () => {
   const router = useRouter();
@@ -18,11 +18,11 @@ const SettingPage = () => {
     setIsOpen(true);
   };
   return (
-    <div className={styles.settingPage}>
+    <SettingPageContainer>
       <TopBar />
       <UserInfo username={nickname} email={email} />
-      <div className={styles.divider} />
-      <div className={styles.content}>
+      <Divider />
+      <Content>
         <Option
           iconSrc="/images/moon.png"
           label="다크 모드"
@@ -60,8 +60,8 @@ const SettingPage = () => {
             />
           </BottomSheet>
         )}
-      </div>
-    </div>
+      </Content>
+    </SettingPageContainer>
   );
 };
 

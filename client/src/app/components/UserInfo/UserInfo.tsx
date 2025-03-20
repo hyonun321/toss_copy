@@ -1,7 +1,12 @@
 'use client';
 
-import Image from 'next/image';
-import styles from './UserInfo.module.css';
+import {
+  UserInfoContainer,
+  AvatarIcon,
+  UserInfoText,
+  Username,
+  Email,
+} from './styles';
 
 interface UserInfoProps {
   username: string | null;
@@ -10,18 +15,17 @@ interface UserInfoProps {
 
 export const UserInfo = ({ username, email }: UserInfoProps) => {
   return (
-    <div className={styles.userInfoContainer}>
-      <Image
-        className={styles.avatarIcon}
+    <UserInfoContainer>
+      <AvatarIcon
         width={64}
         height={64}
         alt="User Avatar"
         src="/images/Avatars.png"
       />
-      <div className={styles.userInfoText}>
-        <b className={styles.username}>{username}</b>
-        <div className={styles.email}>{email}</div>
-      </div>
-    </div>
+      <UserInfoText>
+        <Username>{username}</Username>
+        <Email>{email}</Email>
+      </UserInfoText>
+    </UserInfoContainer>
   );
 };

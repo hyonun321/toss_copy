@@ -1,11 +1,12 @@
 'use client';
 
-import styles from './page.module.css';
 import Title from '@/app/components/Title/Title';
 import { ImageText } from '@/app/components/ImageText/ImageText';
 import { Button } from '@/app/components/Button/Button';
 import { AuthHeader } from '@/app/components/AuthHeader/AuthHeader';
 import { useRouter } from 'next/navigation';
+import { Container, Main, Footer } from './styles';
+
 export default function Home() {
   const router = useRouter();
   const handleRouteBack = () => {
@@ -13,9 +14,9 @@ export default function Home() {
   };
 
   return (
-    <div className={styles.container}>
+    <Container>
       <AuthHeader onActionClick={handleRouteBack} />
-      <main className={styles.main}>
+      <Main>
         <Title>
           도스를 시작하려면
           <br />
@@ -26,16 +27,16 @@ export default function Home() {
           enableAnimation={true}
           alt="도스 로고"
         />
-      </main>
+      </Main>
 
-      <footer className={styles.footer}>
+      <Footer>
         <Button
           text="로그인"
           onClick={() => router.push('/login')}
           backgroundColor="red"
           textColor="white"
         />
-      </footer>
-    </div>
+      </Footer>
+    </Container>
   );
 }

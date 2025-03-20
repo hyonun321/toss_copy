@@ -5,7 +5,13 @@ import { InputField } from '@/app/components/TextField/InputField';
 import { Buttonv2 } from '@/app/components/Buttonv2/Buttonv2';
 import { useValidation, ValidationType } from '@/app/hooks/useValidation';
 import Title from '@/app/components/Title/Title';
-import styles from './page.module.css';
+import {
+  Container,
+  InputContainer,
+  TitleContainer,
+  FixedButton,
+  ErrorMessage,
+} from './styles';
 
 type RegisterProps = {
   title: string;
@@ -16,7 +22,7 @@ type RegisterProps = {
   validationType: ValidationType;
   onActionClick?: () => void;
   isLoading?: boolean;
-  serverError?: string | null; // 서버 에러 메시지를 위한 선택적 prop 추가
+  serverError?: string | null;
 };
 
 const REGISTER: React.FC<RegisterProps> = ({
@@ -53,36 +59,31 @@ const REGISTER: React.FC<RegisterProps> = ({
   };
 
   return (
-    <div className={styles.container}>
+    <Container>
       <AuthHeader title={title} onActionClick={onActionClick} />
-      <div className={styles.title}>
+      <TitleContainer>
         <Title>{text}</Title>
-      </div>
-      <div className={styles.inputContainer}>
+      </TitleContainer>
+      <InputContainer>
         <InputField
           type={validationType === 'password' ? 'password' : 'text'}
           label={placeholder}
           value={value}
           onChange={handleChange}
         />
-        {error && <p className={styles.errorMessage}>{error}</p>}
-        {!error && serverError && (
-          <p className={styles.errorMessage}>{serverError}</p>
-        )}
-      </div>
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+        {!error && serverError && <ErrorMessage>{serverError}</ErrorMessage>}
+      </InputContainer>
 
-      <div
-        className={styles.fixedButton}
-        style={{ bottom: `calc(16px + ${resizeHeight}px)` }}
-      >
+      <FixedButton resizeHeight={resizeHeight}>
         <Buttonv2
           text={buttonText}
           onClick={handleNext}
           backgroundColor="red"
           textColor="white"
         />
-      </div>
-    </div>
+      </FixedButton>
+    </Container>
   );
 };
 

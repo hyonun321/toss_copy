@@ -1,14 +1,15 @@
 'use client';
 import { Button } from '../../../components/Button/Button';
 import { ViewContainer } from '../../../components/viewContainer/viewContainer';
-import styles from './MainView.module.css';
 import { ImageText } from '@/app/components/ImageText/ImageText';
 import { useRouter } from 'next/navigation';
+import { Container, ScrollArea, FixedButton } from './styles';
+
 export function MainView() {
   const router = useRouter();
   return (
-    <div className={styles.container}>
-      <div className={styles.scrollArea}>
+    <Container>
+      <ScrollArea>
         <ViewContainer>
           <ImageText
             imageSrc="/images/doss_logo.png"
@@ -51,17 +52,16 @@ export function MainView() {
             }
           />
         </ViewContainer>
-      </div>
+      </ScrollArea>
 
-      {/* TODO: Footer로 속성을 넣어서 정리가능 */}
-      <div className={styles.fixedButton}>
+      <FixedButton>
         <Button
           text="이용하기"
           onClick={() => router.push('/loginbegin')}
           backgroundColor="red"
           textColor="white"
         />
-      </div>
-    </div>
+      </FixedButton>
+    </Container>
   );
 }
