@@ -18,7 +18,7 @@ import com.shop.cafe.service.StockService;
 import java.util.logging.Logger;
 
 @RestController
-@CrossOrigin({"http://127.0.0.1:5500/","http://localhost:3000"})
+@CrossOrigin({"http://127.0.0.1:3000/","http://127.0.0.1:5500/","http://localhost:3000"})
 public class MemberController {
     private static final Logger logger = Logger.getLogger(MemberService.class.getName());
     

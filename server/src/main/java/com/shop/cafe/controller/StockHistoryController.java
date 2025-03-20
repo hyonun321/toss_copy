@@ -15,7 +15,7 @@ import com.shop.cafe.service.SearchHistoryService;
 
 @RestController
 @RequestMapping("/api/search")
-@CrossOrigin({"http://127.0.0.1:5500/","http://localhost:3000"})
+@CrossOrigin({"http://127.0.0.1:3000/","http://127.0.0.1:5500/","http://localhost:3000"})
 public class StockHistoryController {
     private final SearchHistoryService searchHistoryService;
     
