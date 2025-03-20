@@ -825,9 +825,8 @@ private String getExchangeCodeForOverseas(String code) {
                 
                 JSONArray stockArray = jsonResponse.getJSONArray("output2");
                 List<StockInfo> stocks = new ArrayList<>();
-                int limit = Math.min(stockArray.length(), 30);
-
-                for (int i = 0; i < limit; i++) {
+                
+                for (int i = 0; i < stockArray.length(); i++) {
                     JSONObject stockJson = stockArray.getJSONObject(i);
                     
                     // API 응답의 필드명은 실제 API 문서를 참고하여 조정 필요
@@ -908,9 +907,8 @@ private String getExchangeCodeForOverseas(String code) {
                 
                 JSONArray stockArray = jsonResponse.getJSONArray("output2");
                 List<StockInfo> stocks = new ArrayList<>();
-                int limit = Math.min(stockArray.length(), 30);
-
-                for (int i = 0; i < limit; i++) {
+                
+                for (int i = 0; i < stockArray.length(); i++) {
                     JSONObject stockJson = stockArray.getJSONObject(i);
                     
                     StockInfo stock = new StockInfo(
@@ -987,9 +985,8 @@ private String getExchangeCodeForOverseas(String code) {
                 
                 JSONArray stockArray = jsonResponse.getJSONArray("output2");
                 List<StockInfo> stocks = new ArrayList<>();
-                int limit = Math.min(stockArray.length(), 30);
-
-                for (int i = 0; i < limit; i++) {
+                
+                for (int i = 0; i < stockArray.length(); i++) {
                     JSONObject stockJson = stockArray.getJSONObject(i);
                     
                     StockInfo stock = new StockInfo(
@@ -1092,9 +1089,7 @@ private String getExchangeCodeForOverseas(String code) {
                 JSONArray stockArray = jsonResponse.getJSONArray("output2");
                 List<StockInfo> stocks = new ArrayList<>();
                 
-                int limit = Math.min(stockArray.length(), 30);
-
-                for (int i = 0; i < limit; i++) {
+                for (int i = 0; i < stockArray.length(); i++) {
                     JSONObject stockJson = stockArray.getJSONObject(i);
                     
                     StockInfo stock = new StockInfo(
