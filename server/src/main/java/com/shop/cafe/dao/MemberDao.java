@@ -70,7 +70,6 @@ public class MemberDao {
             stmt.setString(2, m.getPwd());
             stmt.setString(3, m.getNickname());
             int i = stmt.executeUpdate();
-            System.out.println(i + "행이 insert되었습니다");
         }
     }
     

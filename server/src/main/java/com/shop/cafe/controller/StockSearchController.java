@@ -27,7 +27,6 @@ public class StockSearchController {
     @GetMapping("/stocks")
     public ResponseEntity<List<StockDocument>> searchStocks(@RequestParam String query) {
         List<StockDocument> results = stockSearchRepository.findByNameContainingOrSymbolContaining(query, query);
-        System.out.println(results);
         return ResponseEntity.ok(results);
     }
 }

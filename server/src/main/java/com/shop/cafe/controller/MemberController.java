@@ -75,7 +75,6 @@ public class MemberController {
 	
 	@PostMapping("login")
 	public Map<String,String> login(@RequestBody Member m) {
-		System.out.println(m);
 		
 		Map<String,String> responseMap=new HashMap<>();
 		
@@ -101,7 +100,6 @@ public class MemberController {
 	
 	@PostMapping("insertMember")
 	public String insertMember(@RequestBody Member m) {
-	    System.out.println(m);
 	    try {
 	        memberService.insertMember(m);
 	        return m.getNickname() + "님 가입을 환영합니다";
@@ -113,7 +111,6 @@ public class MemberController {
 	
 	@PostMapping("updateMember")
 	public String updateMember(@RequestBody Member m) {
-		System.out.println(m);
 		try {
 			memberService.updateMember(m);
 			return "ok";
@@ -126,7 +123,6 @@ public class MemberController {
 	
 	@PostMapping("deleteMember")
 	public String deleteMember(@RequestBody String email) {
-		System.out.println(email);
 		try {
 			memberService.deleteMember(email);
 			return "ok";
