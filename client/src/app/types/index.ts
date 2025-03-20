@@ -25,7 +25,7 @@ export interface TransformedStockItem {
   change: string;
   changePercentage: string;
   isPositiveChange: boolean;
-  isFavorite: boolean;
+  isFavorite?: boolean;
 }
 
 export interface ApiResponse {
