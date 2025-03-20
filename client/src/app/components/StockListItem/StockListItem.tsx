@@ -120,7 +120,7 @@ export function StockListItem({
       </ItemContainer>
 
       {isBottomSheetOpen && (
-        <BottomSheet height="20vh">
+        <BottomSheet height="25vh">
           <BottomSheetContent
             title={
               <>

@@ -239,7 +239,7 @@ export function SearchView() {
 
       {/* 바텀시트 모달 추가 */}
       {isBottomSheetOpen && selectedStock && (
-        <BottomSheet height="20vh">
+        <BottomSheet height="25vh">
           <BottomSheetContent
             title={
               <>
