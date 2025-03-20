@@ -1,7 +1,7 @@
 'use client';
 import { useMyFunnel } from './funnelcontext';
 import React, { useState } from 'react';
-import REGISTER from './registerview';
+import { Register as REGISTER } from './registerview';
 import { useRouter } from 'next/navigation';
 import { useSignup } from '../../hooks/useSignup';
 

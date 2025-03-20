@@ -1,10 +1,11 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { AuthHeader } from '@/app/components/AuthHeader/AuthHeader';
 import { InputField } from '@/app/components/TextField/InputField';
 import { Buttonv2 } from '@/app/components/Buttonv2/Buttonv2';
-import { useValidation, ValidationType } from '@/app/hooks/useValidation';
+import { ValidationType } from '@/app/hooks/useValidation';
 import { Title } from '@/app/components/Title/Title';
+import { useRegister } from '@/app/hooks/useRegister';
 import {
   Container,
   InputContainer,
@@ -36,27 +37,11 @@ export const Register = ({
   isLoading = false,
   serverError,
 }: RegisterProps) => {
-  const [resizeHeight, setResizeHeight] = useState<number>(0);
-  const { value, error, handleChange } = useValidation(validationType);
-
-  useEffect(() => {
-    const resizeHandler = () => {
-      if (window.visualViewport) {
-        setResizeHeight(window.innerHeight - window.visualViewport.height);
-      }
-    };
-
-    window.visualViewport?.addEventListener('resize', resizeHandler);
-    return () => {
-      window.visualViewport?.removeEventListener('resize', resizeHandler);
-    };
-  }, []);
-
-  const handleNext = () => {
-    if (!error && value && !isLoading) {
-      onNext(value);
-    }
-  };
+  const { resizeHeight, value, error, handleChange, handleNext } = useRegister({
+    validationType,
+    onNext,
+    isLoading,
+  });
 
   return (
     <Container>
@@ -86,5 +71,3 @@ export const Register = ({
     </Container>
   );
 };
-
-export default Register;

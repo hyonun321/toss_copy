@@ -1,6 +1,6 @@
 'use client';
 
-import REGISTER from '@/app/(public)/register/registerview';
+import { Register as REGISTER } from '@/app/(public)/register/registerview';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/app/stores/authStore';
