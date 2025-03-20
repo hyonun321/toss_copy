@@ -20,7 +20,6 @@ interface MarketHeaderProps {
 }
 
 export function MarketHeader({ onRefresh }: MarketHeaderProps) {
-  console.log(onRefresh);
   const router = useRouter();
   const [marketData, setMarketData] = useState([
     { name: '나스닥', value: '17,251.32', change: '-4.0%', negative: true },
