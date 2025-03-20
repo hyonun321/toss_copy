@@ -11,9 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.shop.cafe.dao.LoginDao;
 import com.shop.cafe.dao.MemberDao;
 import com.shop.cafe.dao.SaltDao;
+import com.shop.cafe.dao.LoginAttemptDao;
 import com.shop.cafe.dto.Login;
 import com.shop.cafe.dto.Member;
 import com.shop.cafe.dto.SaltInfo;
+import com.shop.cafe.dto.LoginAttempt;
 import com.shop.cafe.util.JwtTokenProvider;
 import com.shop.cafe.util.OpenCrypt;
 
@@ -28,49 +30,85 @@ public class MemberService {
 	@Autowired
 	SaltDao saltDao;
 	
+	@Autowired
+	LoginAttemptDao loginAttemptDao;
+	
+	private static final int MAX_FAILED_ATTEMPTS = 5;
+	private static final long LOCK_TIME_DURATION = 5 * 60 * 1000; // 5분을 밀리초로 변환
+
 	public Login checkToken(String authorization) throws Exception {
 		// TODO Auto-generated method stub
 		return loginDao.checkToken(authorization);
 	}
 
 	
+	@Transactional
 	public Login tokenLogin(Member m) throws Exception {
-		String email=m.getEmail();
-		//email로 salt를 찾아옴
-		SaltInfo saltInfo=saltDao.selectSalt(email);
-		//pwd에 salt를 더하여 암호화
-		String pwd=m.getPwd();
-		byte [] pwdHash=OpenCrypt.getSHA256(pwd, saltInfo.getSalt());
-		String pwdHashHex=OpenCrypt.byteArrayToHex(pwdHash);
+		String email = m.getEmail();
 		
-		m.setPwd(pwdHashHex);
-		m=memberDao.login(m);		
-		
-		if(m!=null) {
-			String nickname=m.getNickname();
-			if(nickname!=null && !nickname.trim().equals("")) {
-				//member table에서 email과 pwd가 확인된 상황 즉, login ok				
+		try {
+			// 로그인 시도 확인
+			LoginAttempt attempt = loginAttemptDao.getLoginAttempt(email);
+			if (attempt != null && attempt.isLocked()) {
+				long lockTimeInMillis = attempt.getLastFailedAttempt().getTime() + LOCK_TIME_DURATION;
+				if (System.currentTimeMillis() < lockTimeInMillis) {
+					long remainingTime = (lockTimeInMillis - System.currentTimeMillis()) / 1000; // 초 단위로 변환
+					throw new Exception(String.format("계정이 잠겼습니다. %.0f분 후에 다시 시도해주세요.", remainingTime/60.0));
+				} else {
+					// 잠금 시간이 지났으면 초기화
+					loginAttemptDao.resetLoginAttempt(email);
+				}
+			}
+
+			// 기존 로그인 로직
+			SaltInfo saltInfo = saltDao.selectSalt(email);
+			if (saltInfo == null) {
+				throw new Exception("존재하지 않는 사용자입니다.");
+			}
+
+			String pwd = m.getPwd();
+			byte[] pwdHash = OpenCrypt.getSHA256(pwd, saltInfo.getSalt());
+			String pwdHashHex = OpenCrypt.byteArrayToHex(pwdHash);
+			
+			m.setPwd(pwdHashHex);
+			m = memberDao.login(m);
+
+			if (m != null && m.getNickname() != null && !m.getNickname().trim().equals("")) {
+				// 로그인 성공 시 로그인 시도 초기화
+				if (attempt != null) {
+					loginAttemptDao.resetLoginAttempt(email);
+				}
 				
-//				//1. salt를 생성한다
-//				String salt=UUID.randomUUID().toString();
-//				System.out.println("salt:"+salt);
-//				//2. email을 hashing 한다
-//				byte[] originalHash=OpenCrypt.getSHA256(email, salt);
-//				//3. db에 저장하기 좋은 포맷으로 인코딩한다
-//				String myToken=OpenCrypt.byteArrayToHex(originalHash);
-//				System.out.println("myToken : "+myToken);
-				// 표준 포맷 JWT 얻기
-				String jwtToken=JwtTokenProvider.createToken(nickname);
-				System.out.println("jwtToken : "+jwtToken);
-				
-				//4. login table에 token 저장
-				Login loginInfo=new Login(email, jwtToken, nickname, new Date());
+				String jwtToken = JwtTokenProvider.createToken(m.getNickname());
+				Login loginInfo = new Login(email, jwtToken, m.getNickname(), new Date());
 				loginDao.insertToken(loginInfo);
 				return loginInfo;
+			} else {
+				// 로그인 실패 처리
+				if (attempt == null) {
+					attempt = new LoginAttempt(email, 1, new Date(), false);
+					loginAttemptDao.insertLoginAttempt(attempt);
+					throw new Exception(String.format("로그인 실패: 남은 시도 횟수 %d회", MAX_FAILED_ATTEMPTS - 1));
+				} else {
+					attempt.setFailCount(attempt.getFailCount() + 1);
+					attempt.setLastFailedAttempt(new Date());
+					
+					if (attempt.getFailCount() >= MAX_FAILED_ATTEMPTS) {
+						attempt.setLocked(true);
+					}
+					
+					loginAttemptDao.updateLoginAttempt(attempt);
+					
+					if (attempt.isLocked()) {
+						throw new Exception("로그인 5회 실패로 계정이 5분간 잠겼습니다.");
+					} else {
+						throw new Exception(String.format("로그인 실패: 남은 시도 횟수 %d회", MAX_FAILED_ATTEMPTS - attempt.getFailCount()));
+					}
+				}
 			}
+		} catch (Exception e) {
+			throw e; // 트랜잭션 롤백을 위해 예외를 다시 던집니다
 		}
-		
-		return null;		 
 	}
 	
 	public boolean validateToken(String token) {
@@ -123,9 +161,9 @@ public class MemberService {
 		memberDao.updateMember(m);
 	}
 	
-	public void deleteMember(String email) throws Exception{
-		memberDao.deleteMember(email);
-	}
+//	public void deleteMember(String email) throws Exception{
+//		memberDao.deleteMember(email);
+//	}
 
 	public void logout(String authorization) throws Exception {
 		loginDao.deleteToken(authorization);

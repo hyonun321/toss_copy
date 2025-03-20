@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.cafe.dao.LoginAttemptDao">
+    
+    <select id="getLoginAttempt" parameterType="String" resultType="com.shop.cafe.dto.LoginAttempt">
+        SELECT 
+            email,
+            fail_count as failCount,
+            last_failed_attempt as lastFailedAttempt,
+            is_locked as locked
+        FROM login_attempts 
+        WHERE email = #{email}
+    </select>
+    
+    <insert id="insertLoginAttempt" parameterType="com.shop.cafe.dto.LoginAttempt">
+        INSERT INTO login_attempts (
+            email,
+            fail_count,
+            last_failed_attempt,
+            is_locked
+        ) VALUES (
+            #{email},
+            #{failCount},
+            #{lastFailedAttempt},
+            #{locked}
+        )
+    </insert>
+    
+    <update id="updateLoginAttempt" parameterType="com.shop.cafe.dto.LoginAttempt">
+        UPDATE login_attempts 
+        SET 
+            fail_count = #{failCount},
+            last_failed_attempt = #{lastFailedAttempt},
+            is_locked = #{locked}
+        WHERE email = #{email}
+    </update>
+    
+    <update id="resetLoginAttempt" parameterType="String">
+        UPDATE login_attempts 
+        SET 
+            fail_count = 0,
+            last_failed_attempt = NULL,
+            is_locked = false
+        WHERE email = #{email}
+    </update>
+    
+</mapper>
