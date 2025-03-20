@@ -13,6 +13,7 @@ export interface StockData {
   price: number;
   change: string;
   changeRate: number;
+  exchangeCode: string;
   isPositiveChange?: boolean;
 }
 

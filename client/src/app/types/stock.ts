@@ -18,7 +18,6 @@ export interface BaseStock {
   // 표시 속성
   rank?: number; // 순위
   logoType?: 'tesla' | 'etf' | 'kodex' | 'inverse' | 'normal' | string;
-
   // 추가 메타데이터
   country?: 'us' | 'kr' | string;
   leverage?: string; // 레버리지 ETF 표시용
