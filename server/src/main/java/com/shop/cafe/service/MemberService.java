@@ -46,6 +46,7 @@ public class MemberService {
 	public Login tokenLogin(Member m) throws Exception {
 		String email = m.getEmail();
 		
+
 		try {
 			// 로그인 시도 확인
 			LoginAttempt attempt = loginAttemptDao.getLoginAttempt(email);
@@ -142,11 +143,8 @@ public class MemberService {
 	    
 	    // 패스워드 암호화
 		String salt=UUID.randomUUID().toString();
-		System.out.println("salt:"+salt+pwd);
 		byte[] originalHash=OpenCrypt.getSHA256(pwd, salt);
-		System.out.println("originalHash:"+originalHash);
 		String pwdHash=OpenCrypt.byteArrayToHex(originalHash);
-		System.out.println("pwdHash : "+pwdHash);
 	    
 		m.setPwd(pwdHash);
 		int count = memberDao.countByNickname(m.getNickname());

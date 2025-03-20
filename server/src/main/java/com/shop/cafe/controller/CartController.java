@@ -32,8 +32,6 @@ public class CartController {
 	
 	@PostMapping("addToCart")
 	public String addToCart(@RequestHeader String authorization, @RequestBody Cart cart) {
-	    System.out.println(authorization);
-	    System.out.println(cart);
 	    try {
 //	        Login loginInfo = memberService.checkToken(authorization);
 //	        

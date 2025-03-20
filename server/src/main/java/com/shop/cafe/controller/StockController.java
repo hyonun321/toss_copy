@@ -1,5 +1,7 @@
 package com.shop.cafe.controller;
 
+import com.shop.cafe.dto.IndexApiResponse;
+import com.shop.cafe.dto.IndexInfo;
 import com.shop.cafe.dto.StockApiResponse;
 import com.shop.cafe.dto.StockInfo;
 import com.shop.cafe.service.StockService;
@@ -10,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin({"http://127.0.0.1:5500/","http://localhost:3000"})
+@CrossOrigin({"http://127.0.0.1:5500/","http://127.0.0.1:3000/","http://localhost:3000"})
 @RequestMapping("/api/stocks")
 public class StockController {
 
@@ -36,11 +38,41 @@ public class StockController {
         StockApiResponse response = new StockApiResponse("0", "성공", stocks);
         return ResponseEntity.ok(response);
     }
+ // 미국 주식 거래대금 상위 조회
+    @GetMapping("/overseas/trade-value")
+    public ResponseEntity<StockApiResponse> getOverseasTradeValueRanking() {
+        List<StockInfo> stocks = stockService.getOverseasTradeValueRanking();
+        StockApiResponse response = new StockApiResponse("0", "성공", stocks);
+        return ResponseEntity.ok(response);
+    }
+
+    // 미국 주식 거래량 상위 조회
+    @GetMapping("/overseas/volume")
+    public ResponseEntity<StockApiResponse> getOverseasVolumeRanking() {
+        List<StockInfo> stocks = stockService.getOverseasVolumeRanking();
+        StockApiResponse response = new StockApiResponse("0", "성공", stocks);
+        return ResponseEntity.ok(response);
+    }
+
+    // 미국 주식 급상승 순위 조회
+    @GetMapping("/overseas/rising")
+    public ResponseEntity<StockApiResponse> getOverseasRisingRanking() {
+        List<StockInfo> stocks = stockService.getOverseasRisingRanking();
+        StockApiResponse response = new StockApiResponse("0", "성공", stocks);
+        return ResponseEntity.ok(response);
+    }
+
+    // 미국 주식 급하락 순위 조회
+    @GetMapping("/overseas/falling")
+    public ResponseEntity<StockApiResponse> getOverseasFallingRanking() {
+        List<StockInfo> stocks = stockService.getOverseasFallingRanking();
+        StockApiResponse response = new StockApiResponse("0", "성공", stocks);
+        return ResponseEntity.ok(response);
+    }
  // 인기 주식 목록 조회
     @GetMapping("/popular")
     public ResponseEntity<StockApiResponse> getPopularStocks() {
         List<StockInfo> stocks = stockService.getPopularStocks();
-        System.out.println("인기 주식 조회: " + stocks);
         StockApiResponse response = new StockApiResponse("0", "성공", stocks);
         return ResponseEntity.ok(response);
     }
@@ -48,7 +80,6 @@ public class StockController {
     @GetMapping("/domestic/volume")
     public ResponseEntity<StockApiResponse> getDomesticVolumeRanking() {
         List<StockInfo> stocks = stockService.getDomesticVolumeRanking();
-        System.out.println("국내 주식 거래량 상위:"+ stocks);
         StockApiResponse response = new StockApiResponse("0", "성공", stocks);
         return ResponseEntity.ok(response);
     }
@@ -57,7 +88,6 @@ public class StockController {
     @GetMapping("/domestic/trade-value")
     public ResponseEntity<StockApiResponse> getDomesticTradeValueRanking() {
         List<StockInfo> stocks = stockService.getDomesticTradeValueRanking();
-        System.out.println("국내 주식 거래대금 상위:"+ stocks);
         StockApiResponse response = new StockApiResponse("0", "성공", stocks);
         return ResponseEntity.ok(response);
     }
@@ -66,7 +96,6 @@ public class StockController {
     @GetMapping("/domestic/rising")
     public ResponseEntity<StockApiResponse> getDomesticRisingRanking() {
         List<StockInfo> stocks = stockService.getDomesticRisingRanking();
-        System.out.println("국내 주식 급상승:"+ stocks);
         StockApiResponse response = new StockApiResponse("0", "성공", stocks);
         return ResponseEntity.ok(response);
     }
@@ -75,7 +104,6 @@ public class StockController {
     @GetMapping("/domestic/falling")
     public ResponseEntity<StockApiResponse> getDomesticFallingRanking() {
         List<StockInfo> stocks = stockService.getDomesticFallingRanking();
-        System.out.println("국내 주식 급하락:"+ stocks);
         StockApiResponse response = new StockApiResponse("0", "성공", stocks);
         return ResponseEntity.ok(response);
     }
@@ -131,5 +159,30 @@ public class StockController {
     public ResponseEntity<String> refreshDomesticFallingRanking() {
         stockService.refreshDomesticFallingRanking();
         return ResponseEntity.ok("국내 주식 급하락 순위 데이터 갱신 요청이 완료되었습니다.");
+    }
+    
+
+    // 모든 지수 정보 조회
+    @GetMapping("/indices/all")
+    public ResponseEntity<IndexApiResponse> getAllIndices() {
+        List<IndexInfo> indices = stockService.getAllIndices();
+        IndexApiResponse response = new IndexApiResponse("0", "성공", indices);
+        return ResponseEntity.ok(response);
+    }
+    
+    // 국내 지수 정보 조회
+    @GetMapping("/indices/domestic")
+    public ResponseEntity<IndexApiResponse> getDomesticIndices() {
+        List<IndexInfo> indices = stockService.getDomesticIndices();
+        IndexApiResponse response = new IndexApiResponse("0", "성공", indices);
+        return ResponseEntity.ok(response);
+    }
+    
+    // 해외 지수 정보 조회
+    @GetMapping("/indices/overseas")
+    public ResponseEntity<IndexApiResponse> getOverseasIndices() {
+        List<IndexInfo> indices = stockService.getOverseasIndices();
+        IndexApiResponse response = new IndexApiResponse("0", "성공", indices);
+        return ResponseEntity.ok(response);
     }
 }

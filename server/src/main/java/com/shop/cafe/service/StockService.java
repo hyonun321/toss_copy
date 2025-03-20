@@ -2,6 +2,7 @@
 package com.shop.cafe.service;
 
 import com.shop.cafe.dao.StockDao;
+import com.shop.cafe.dto.IndexInfo;
 import com.shop.cafe.dto.StockCodeName;
 import com.shop.cafe.dto.StockInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,66 @@ public class StockService {
         }
         return stockDao.getDomesticStocks();
     }
-    
+
+ // 미국 주식 거래량 상위 종목 조회
+ public List<StockInfo> getOverseasVolumeRanking() {
+     if (needsRefresh(stockDao.getLastUpdated("overseas_volume"))) {
+         refreshOverseasVolumeRanking();
+     }
+     return stockDao.getStocks("overseas_volume");
+ }
+
+ // 미국 주식 급상승 종목 조회
+ public List<StockInfo> getOverseasRisingRanking() {
+     if (needsRefresh(stockDao.getLastUpdated("overseas_rising"))) {
+         refreshOverseasRisingRanking();
+     }
+     return stockDao.getStocks("overseas_rising");
+ }
+
+ // 미국 주식 급하락 종목 조회
+ public List<StockInfo> getOverseasFallingRanking() {
+     if (needsRefresh(stockDao.getLastUpdated("overseas_falling"))) {
+         refreshOverseasFallingRanking();
+     }
+     return stockDao.getStocks("overseas_falling");
+ }
+
+ // 미국 주식 거래량 데이터 갱신
+ public void refreshOverseasVolumeRanking() {
+     try {
+         logger.info("미국 주식 거래량 순위 데이터 갱신 시작...");
+         List<StockInfo> stocks = stockApiService.getOverseasVolumeRanking();
+         stockDao.saveStocks("overseas_volume", stocks);
+         logger.info("미국 주식 거래량 순위 데이터 갱신 완료: " + stocks.size() + "개 종목");
+     } catch (Exception e) {
+         logger.severe("미국 주식 거래량 순위 데이터 갱신 실패: " + e.getMessage());
+     }
+ }
+
+ // 미국 주식 급상승 데이터 갱신
+ public void refreshOverseasRisingRanking() {
+     try {
+         logger.info("미국 주식 급상승 순위 데이터 갱신 시작...");
+         List<StockInfo> stocks = stockApiService.getOverseasRisingRanking();
+         stockDao.saveStocks("overseas_rising", stocks);
+         logger.info("미국 주식 급상승 순위 데이터 갱신 완료: " + stocks.size() + "개 종목");
+     } catch (Exception e) {
+         logger.severe("미국 주식 급상승 순위 데이터 갱신 실패: " + e.getMessage());
+     }
+ }
+
+ // 미국 주식 급하락 데이터 갱신
+ public void refreshOverseasFallingRanking() {
+     try {
+         logger.info("미국 주식 급하락 순위 데이터 갱신 시작...");
+         List<StockInfo> stocks = stockApiService.getOverseasFallingRanking();
+         stockDao.saveStocks("overseas_falling", stocks);
+         logger.info("미국 주식 급하락 순위 데이터 갱신 완료: " + stocks.size() + "개 종목");
+     } catch (Exception e) {
+         logger.severe("미국 주식 급하락 순위 데이터 갱신 실패: " + e.getMessage());
+     }
+ }
     // 해외 주식 정보 조회
     public List<StockInfo> getOverseasStocks() {
         // 캐시된 데이터가 없거나 오래된 경우 갱신
@@ -84,7 +144,6 @@ public class StockService {
     // 국내 주식 거래대금 상위 종목 조회
     public List<StockInfo> getDomesticTradeValueRanking() {
         if (needsRefresh(stockDao.getLastUpdated("domestic_trade_value"))) {
-        	System.out.println("거래대금 상위종목 또 갯인한다" + stockDao.getLastUpdated("domestic_trade_value"));
             refreshDomesticTradeValueRanking();
         }
         return stockDao.getStocks("domestic_trade_value");
@@ -231,7 +290,25 @@ public class StockService {
             logger.severe("국내 주식 데이터 갱신 실패: " + e.getMessage());
         }
     }
-    
+ // 미국 주식 거래대금 상위 종목 조회
+    public List<StockInfo> getOverseasTradeValueRanking() {
+        if (needsRefresh(stockDao.getLastUpdated("overseas_trade_value"))) {
+            refreshOverseasTradeValueRanking();
+        }
+        return stockDao.getStocks("overseas_trade_value");
+    }
+
+    // 미국 주식 거래대금 데이터 갱신
+    public void refreshOverseasTradeValueRanking() {
+        try {
+            logger.info("미국 주식 거래대금 순위 데이터 갱신 시작...");
+            List<StockInfo> stocks = stockApiService.getOverseasTradeValueRanking();
+            stockDao.saveStocks("overseas_trade_value", stocks);
+            logger.info("미국 주식 거래대금 순위 데이터 갱신 완료: " + stocks.size() + "개 종목");
+        } catch (Exception e) {
+            logger.severe("미국 주식 거래대금 순위 데이터 갱신 실패: " + e.getMessage());
+        }
+    }
     // 해외 주식 데이터 갱신
     public void refreshOverseasStocks() {
         try {
@@ -243,7 +320,81 @@ public class StockService {
             logger.severe("해외 주식 데이터 갱신 실패: " + e.getMessage());
         }
     }
+
+    // 모든 지수 정보 가져오기
+    public List<IndexInfo> getAllIndices() {
+        if (needsRefresh(stockDao.getAllIndicesLastUpdated())) {
+            refreshAllIndices();
+        }
+        return stockDao.getAllIndices();
+    }
     
+    // 국내 지수 정보 가져오기
+    public List<IndexInfo> getDomesticIndices() {
+        if (needsRefresh(stockDao.getDomesticIndicesLastUpdated())) {
+            refreshDomesticIndices();
+        }
+        return stockDao.getDomesticIndices();
+    }
+    
+    // 해외 지수 정보 가져오기
+    public List<IndexInfo> getOverseasIndices() {
+        if (needsRefresh(stockDao.getOverseasIndicesLastUpdated())) {
+            refreshOverseasIndices();
+        }
+        return stockDao.getOverseasIndices();
+    }
+    
+    // 모든 지수 정보 갱신
+    public void refreshAllIndices() {
+        try {
+            logger.info("모든 지수 정보 갱신 시작...");
+            
+            // 국내 지수 가져오기
+            List<IndexInfo> domesticIndices = stockApiService.getDomesticIndices();
+            stockDao.saveDomesticIndices(domesticIndices);
+            
+            // 해외 지수 가져오기
+            List<IndexInfo> overseasIndices = stockApiService.getOverseasIndices();
+            stockDao.saveOverseasIndices(overseasIndices);
+            
+            // 모든 지수 합치기
+            List<IndexInfo> allIndices = new ArrayList<>();
+            allIndices.addAll(overseasIndices); // 해외 지수를 먼저 넣어서 롤링시 먼저 보이게 함
+            allIndices.addAll(domesticIndices);
+            
+            // 저장
+            stockDao.saveAllIndices(allIndices);
+            
+            logger.info("모든 지수 정보 갱신 완료: " + allIndices.size() + "개 지수");
+        } catch (Exception e) {
+            logger.severe("지수 정보 갱신 실패: " + e.getMessage());
+        }
+    }
+    
+    // 국내 지수 정보 갱신
+    public void refreshDomesticIndices() {
+        try {
+            logger.info("국내 지수 정보 갱신 시작...");
+            List<IndexInfo> indices = stockApiService.getDomesticIndices();
+            stockDao.saveDomesticIndices(indices);
+            logger.info("국내 지수 정보 갱신 완료: " + indices.size() + "개 지수");
+        } catch (Exception e) {
+            logger.severe("국내 지수 정보 갱신 실패: " + e.getMessage());
+        }
+    }
+    
+    // 해외 지수 정보 갱신
+    public void refreshOverseasIndices() {
+        try {
+            logger.info("해외 지수 정보 갱신 시작...");
+            List<IndexInfo> indices = stockApiService.getOverseasIndices();
+            stockDao.saveOverseasIndices(indices);
+            logger.info("해외 지수 정보 갱신 완료: " + indices.size() + "개 지수");
+        } catch (Exception e) {
+            logger.severe("해외 지수 정보 갱신 실패: " + e.getMessage());
+        }
+    }
  // 정기적인 데이터 갱신 (15분마다)
     @Scheduled(fixedRate = 900000) // 15분 = 900,000ms
     public void scheduledDataRefresh() {
@@ -253,6 +404,14 @@ public class StockService {
         refreshDomesticRisingRanking();
         refreshDomesticFallingRanking();
         refreshPopularStocks(); 
-        // 해외 주식 갱신 코드 (필요한 경우)
+
+        // 미국 주식 갱신 (추가)
+        refreshOverseasVolumeRanking();
+        refreshOverseasRisingRanking();
+        refreshOverseasFallingRanking();
+        
+        // 지수 갱신
+        refreshAllIndices();
+        logger.info("정기 주식 데이터 갱신 완료");
     }
 }

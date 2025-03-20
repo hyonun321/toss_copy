@@ -85,7 +85,7 @@ export const Price = styled.span`
   color: ${theme.colors.boldGray};
 `;
 
-export const ChangeText = styled.span<{ isPositive: boolean }>`
+export const ChangeText = styled.span<{ isPositive: boolean | undefined }>`
   font-size: 14px;
   font-weight: 400;
   color: ${({ isPositive }) =>
