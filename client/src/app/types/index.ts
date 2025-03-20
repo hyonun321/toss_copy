@@ -14,7 +14,7 @@ export interface StockData {
   change: string;
   changeRate: number;
   exchangeCode: string;
-  isPositiveChange?: boolean;
+  positiveChange?: boolean;
 }
 
 export interface TransformedStockItem {
@@ -25,7 +25,7 @@ export interface TransformedStockItem {
   price: string;
   change: string;
   changePercentage: string;
-  isPositiveChange: boolean;
+  positiveChange?: boolean;
   isFavorite?: boolean;
 }
 
