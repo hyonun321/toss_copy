@@ -1,13 +1,13 @@
 'use client';
 
-import Title from '@/app/components/Title/Title';
+import { Title } from '@/app/components/Title/Title';
 import { ImageText } from '@/app/components/ImageText/ImageText';
 import { Button } from '@/app/components/Button/Button';
 import { AuthHeader } from '@/app/components/AuthHeader/AuthHeader';
 import { useRouter } from 'next/navigation';
 import { Container, Main, Footer } from './styles';
 
-export default function Home() {
+export const Home = () => {
   const router = useRouter();
   const handleRouteBack = () => {
     router.push('/main');
@@ -39,4 +39,6 @@ export default function Home() {
       </Footer>
     </Container>
   );
-}
+};
+
+export default Home;

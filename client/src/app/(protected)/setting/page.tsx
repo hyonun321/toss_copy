@@ -10,7 +10,7 @@ import BottomSheetContent from '@/app/components/BottomSheet/BottomSheetContent'
 import { useAuthStore } from '@/app/stores/authStore';
 import { SettingPageContainer, Content, Divider } from './styles';
 
-const SettingPage = () => {
+export const SettingPage = () => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const { nickname, email, logout } = useAuthStore();

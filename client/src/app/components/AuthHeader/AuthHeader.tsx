@@ -8,7 +8,7 @@ export type AuthHeaderProps = {
   onActionClick?: () => void;
 };
 
-export function AuthHeader({ title, onActionClick }: AuthHeaderProps) {
+export const AuthHeader = ({ title, onActionClick }: AuthHeaderProps) => {
   return (
     <Header>
       <BackButton
@@ -21,4 +21,4 @@ export function AuthHeader({ title, onActionClick }: AuthHeaderProps) {
       <Label>{title}</Label>
     </Header>
   );
-}
+};

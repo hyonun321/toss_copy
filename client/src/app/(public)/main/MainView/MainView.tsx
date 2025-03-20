@@ -5,7 +5,7 @@ import { ImageText } from '@/app/components/ImageText/ImageText';
 import { useRouter } from 'next/navigation';
 import { Container, ScrollArea, FixedButton } from './styles';
 
-export function MainView() {
+export const MainView = () => {
   const router = useRouter();
   return (
     <Container>
@@ -64,4 +64,4 @@ export function MainView() {
       </FixedButton>
     </Container>
   );
-}
+};

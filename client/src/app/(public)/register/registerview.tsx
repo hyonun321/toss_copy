@@ -4,7 +4,7 @@ import { AuthHeader } from '@/app/components/AuthHeader/AuthHeader';
 import { InputField } from '@/app/components/TextField/InputField';
 import { Buttonv2 } from '@/app/components/Buttonv2/Buttonv2';
 import { useValidation, ValidationType } from '@/app/hooks/useValidation';
-import Title from '@/app/components/Title/Title';
+import { Title } from '@/app/components/Title/Title';
 import {
   Container,
   InputContainer,
@@ -25,7 +25,7 @@ type RegisterProps = {
   serverError?: string | null;
 };
 
-const REGISTER: React.FC<RegisterProps> = ({
+export const Register = ({
   title,
   text,
   placeholder,
@@ -35,7 +35,7 @@ const REGISTER: React.FC<RegisterProps> = ({
   onActionClick,
   isLoading = false,
   serverError,
-}) => {
+}: RegisterProps) => {
   const [resizeHeight, setResizeHeight] = useState<number>(0);
   const { value, error, handleChange } = useValidation(validationType);
 
@@ -87,4 +87,4 @@ const REGISTER: React.FC<RegisterProps> = ({
   );
 };
 
-export default REGISTER;
+export default Register;

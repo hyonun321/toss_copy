@@ -40,7 +40,7 @@ const steps = [
   { imageSrc: '/images/smile.png', text: <>회원가입 완료!</> },
 ];
 
-export default function Onboarding() {
+export const Onboarding = () => {
   const [step, setStep] = useState(0);
   const router = useRouter();
 
@@ -91,4 +91,6 @@ export default function Onboarding() {
       </AnimatePresence>
     </Container>
   );
-}
+};
+
+export default Onboarding;
