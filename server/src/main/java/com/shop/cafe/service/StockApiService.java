@@ -46,6 +46,68 @@ public class StockApiService {
         loadTokenFromFile();
     }
     
+    // 코드별 하나의 주식 정보만 불러오기
+    public StockInfo getStockByCode(String code) {
+        try {
+            String token = getToken();
+            if (token == null) {
+                logger.warning("토큰 발급 실패");
+                return null;
+            }
+            
+            // 국내주식 상세 조회 API URL
+            String url = apiUrl + "/uapi/domestic-stock/v1/quotations/inquire-price";
+            
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+                .queryParam("fid_cond_mrkt_div_code", "J")
+                .queryParam("fid_input_iscd", code);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("authorization", "Bearer " + token);
+            headers.set("appkey", appKey);
+            headers.set("appsecret", appSecret);
+            headers.set("tr_id", "FHKST01010100");  // 주식 현재가 시세 TR ID
+            headers.set("custtype", "P");
+            
+            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+            
+            ResponseEntity<String> response = restTemplate.exchange(
+                builder.toUriString(),
+                HttpMethod.GET,
+                requestEntity,
+                String.class
+            );
+            
+            if (response.getStatusCode() == HttpStatus.OK) {
+                JSONObject jsonResponse = new JSONObject(response.getBody());
+                JSONObject outputObj = jsonResponse.getJSONObject("output");
+                
+                // API 응답에서 필요한 정보 추출
+                StockInfo stock = new StockInfo(
+                    code,
+                    outputObj.getString("hts_kor_isnm"),  // 종목명
+                    outputObj.getString("stck_prpr"),     // 현재가
+                    outputObj.getString("prdy_vrss"),     // 대비
+                    outputObj.getString("prdy_ctrt"),     // 등락률
+                    outputObj.getString("acml_vol"),      // 거래량
+                    "KRX"                                // 거래소 코드
+                );
+                
+                stock.setPositiveChange(outputObj.getString("prdy_vrss_sign").equals("2") || 
+                                       outputObj.getString("prdy_vrss_sign").equals("1"));
+                
+                return stock;
+            } else {
+                logger.warning("코드 " + code + " 조회 실패: " + response.getStatusCode());
+                return null;
+            }
+        } catch (Exception e) {
+            logger.warning("코드 " + code + " 조회 중 예외 발생: " + e.getMessage());
+            return null;
+        }
+    }
+    
     /**
      * 토큰을 파일에서 로드합니다.
      */

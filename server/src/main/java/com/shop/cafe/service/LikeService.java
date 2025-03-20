@@ -2,6 +2,10 @@ package com.shop.cafe.service;
 
 import com.shop.cafe.dao.LikeDao;
 import com.shop.cafe.dto.Like;
+
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,7 +24,10 @@ public class LikeService {
         likeDao.removeLike(like);
     }
 
-    public boolean isLiked(String email) {
-        return likeDao.isLiked(email);
+    public boolean isLiked(String email, String stockCode) {
+        return likeDao.isLiked(email, stockCode);
+    }
+    public List<Map<String, String>> getLikedStocks(String email) {
+        return likeDao.getLikedStocks(email);
     }
 }

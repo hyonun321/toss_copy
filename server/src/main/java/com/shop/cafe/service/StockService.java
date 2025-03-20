@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -104,7 +105,40 @@ public class StockService {
         return stockDao.getStocks("domestic_falling");
     }
     
-    
+    public List<StockInfo> getStocksByCodeList(List<String> stockCodes) {
+        List<StockInfo> result = new ArrayList<>();
+        
+        for (String code : stockCodes) {
+            // 먼저 메모리에서 검색
+            StockInfo stockInfo = stockDao.getStockByCode(code);
+            
+            // 메모리에 없거나 데이터가 오래된 경우 API 호출
+            if (stockInfo == null || needsRefresh(stockInfo.getLastUpdated())) {
+                try {
+                    // 개별 종목 정보 요청
+                    stockInfo = stockApiService.getStockByCode(code);
+                    
+                    if (stockInfo != null) {
+                        // 결과에 추가
+                        result.add(stockInfo);
+                    }
+                } catch (Exception e) {
+                    logger.warning("코드 " + code + "에 대한 API 호출 실패: " + e.getMessage());
+                    // 에러가 있어도 다른 코드는 계속 조회
+                }
+            } else {
+                // 메모리에 있는 경우 그대로 사용
+                result.add(stockInfo);
+            }
+        }
+        
+        // 랭크 재설정 (필요시)
+        for (int i = 0; i < result.size(); i++) {
+            result.get(i).setRank(i + 1);
+        }
+        
+        return result;
+    }
 
     // 국내 주식 거래량 데이터 갱신
     public void refreshDomesticVolumeRanking() {
