@@ -69,12 +69,16 @@ export function StockListItem({
         ? 'http://localhost:8080/api/likes/remove'
         : 'http://localhost:8080/api/likes/add';
 
+      let exchangeCode = 'KRX';
+      if (stockCode.match(/[A-Z]/)) {
+        exchangeCode = 'NAS'; // 기본 해외거래소는 나스닥으로 가정
+      }
       const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, stockCode }),
+        body: JSON.stringify({ email, stockCode, stockName, exchangeCode }),
       });
 
       if (response.ok) {
