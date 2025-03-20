@@ -60,7 +60,6 @@ public class MemberDao {
             if (i == 0) {
                 throw new Exception("존재하지 않는 사용자입니다.");
             }
-            System.out.println(i + "행의 비밀번호가 업데이트되었습니다");
         }
     }
     public void insertMember(Member m) throws Exception {

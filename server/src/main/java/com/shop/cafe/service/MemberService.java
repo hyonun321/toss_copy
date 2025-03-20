@@ -61,7 +61,6 @@ public class MemberService {
 //				System.out.println("myToken : "+myToken);
 				// 표준 포맷 JWT 얻기
 				String jwtToken=JwtTokenProvider.createToken(nickname);
-				System.out.println("jwtToken : "+jwtToken);
 				
 				//4. login table에 token 저장
 				Login loginInfo=new Login(email, jwtToken, nickname, new Date());

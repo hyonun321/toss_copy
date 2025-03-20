@@ -27,7 +27,6 @@ public class MemberController {
 	
 	@PostMapping("logout")
 	public void logout(@RequestHeader String authorization) {
-		System.out.println(authorization);
 		try {
 			memberService.logout(authorization);
 		} catch (Exception e) {
@@ -38,7 +37,6 @@ public class MemberController {
 	
 	@PostMapping("tokenLogin")
 	public Map<String,String> tokenLogin(@RequestBody Member m) {
-		System.out.println(m);
 		
 		Map<String,String> responseMap=new HashMap<>();
 		

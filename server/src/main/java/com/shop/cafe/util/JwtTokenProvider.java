@@ -17,7 +17,6 @@ public class JwtTokenProvider {
 		claims.put("nickname", data);
 
 		Date now = new Date();
-		System.out.println(now);
 
 		return Jwts.builder().setHeaderParam(Header.TYPE, Header.JWT_TYPE).setClaims(claims).setIssuedAt(now)
 				.setExpiration(new Date(now.getTime() + (1000L * 60 * 30))).signWith(SignatureAlgorithm.HS256, salt)
