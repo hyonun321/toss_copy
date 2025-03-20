@@ -200,7 +200,7 @@ export function HomeView() {
 
   return (
     <PageContainer>
-      <MarketHeader onRefresh={refreshData} />
+      <MarketHeader />
       <ImageText
         imageSrc="/images/egg.png"
         text={
