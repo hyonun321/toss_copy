@@ -44,6 +44,12 @@ export const RollingItem = styled.li`
   font-size: 18px;
   font-weight: 600;
   color: ${theme.colors.black};
+  span {
+    /* For the name specifically */
+    margin-right: 8px;
+    flex-grow: 0; /* Don't allow shrinking */
+    white-space: nowrap; /* Prevent wrapping */
+  }
 `;
 
 export const MarketValue = styled.span<{ negative?: boolean }>`

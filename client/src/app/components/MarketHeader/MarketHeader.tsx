@@ -15,26 +15,85 @@ import {
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-interface MarketHeaderProps {
-  onRefresh: () => void;
+interface MarketIndex {
+  name: string;
+  value: string;
+  change: string;
+  changeRate: string;
+  negative: boolean;
 }
-
-export function MarketHeader({ onRefresh }: MarketHeaderProps) {
+export function MarketHeader() {
   const router = useRouter();
-  const [marketData, setMarketData] = useState([
-    { name: '나스닥', value: '17,251.32', change: '-4.0%', negative: true },
-    { name: 'S&P 500', value: '4,112.55', change: '+2.1%', negative: false },
-    { name: '다우존스', value: '33,921.73', change: '-1.2%', negative: true },
-    { name: '코스피', value: '2,564.22', change: '+0.8%', negative: false },
-    { name: '코스닥', value: '860.45', change: '-0.5%', negative: true },
-  ]);
+  const [marketData, setMarketData] = useState([]);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [lastRefreshed, setLastRefreshed] = useState<number>(Date.now());
+
   const handleRouteSearch = () => {
     router.push('/search');
   };
   const handleRouteSetting = () => {
     router.push('/setting');
   };
-  const [isAnimating, setIsAnimating] = useState(false);
+
+  // 실제 지수 데이터 가져오기
+  useEffect(() => {
+    const fetchMarketIndices = async () => {
+      try {
+        const response = await fetch(
+          'http://localhost:8080/api/stocks/indices/all',
+        );
+
+        if (!response.ok) {
+          throw new Error('지수 데이터를 불러오는데 실패했습니다');
+        }
+
+        const data = await response.json();
+        console.log(data);
+        if (data.resultCode === '0' && Array.isArray(data.indices)) {
+          const formattedIndices = data.indices.map((index: MarketIndex) => ({
+            name: index.name,
+            value: formatValue(index.value),
+            change: formatChangeWithSign(index.change, index.negative),
+            changeRate: index.changeRate,
+            negative: index.negative,
+          }));
+
+          setMarketData(formattedIndices);
+        }
+      } catch (error) {
+        console.error('지수 데이터 로딩 오류:', error);
+        // 에러 시 기존 데이터 유지
+      } finally {
+      }
+    };
+
+    fetchMarketIndices();
+
+    // 5분마다 데이터 갱신
+    const intervalId = setInterval(() => {
+      setLastRefreshed(Date.now());
+    }, 300000); // 5분마다 갱신
+
+    return () => clearInterval(intervalId);
+  }, [lastRefreshed]);
+
+  // 숫자 포맷팅 함수
+  const formatValue = (value: string) => {
+    // 문자열에서 숫자만 추출
+    const numericValue = parseFloat(value.replace(/,/g, ''));
+    // 천 단위 콤마 추가
+    return numericValue.toLocaleString();
+  };
+
+  // 변화율 포맷팅 함수 (부호 포함)
+  const formatChangeWithSign = (change: string, isNegative: boolean) => {
+    // 문자열에서 숫자만 추출
+    const numericChange = parseFloat(change.replace(/,/g, ''));
+    // 부호 및 소수점 1자리로 포맷팅
+    return isNegative
+      ? `-${Math.abs(numericChange).toFixed(1)}%`
+      : `+${Math.abs(numericChange).toFixed(1)}%`;
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
