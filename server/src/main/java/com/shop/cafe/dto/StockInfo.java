@@ -13,6 +13,7 @@ public class StockInfo {
     private LocalDateTime lastUpdated; // 마지막 업데이트 시간
     private int rank; // 순위
     private boolean isPositiveChange; // 상승 여부
+    private String tradingValue; // 거래대금
 
     // 생성자
     public StockInfo() {}
@@ -29,6 +30,8 @@ public class StockInfo {
         this.lastUpdated = LocalDateTime.now();
         this.isPositiveChange = !change.startsWith("-"); // 기본값 설정
     }
+    public String getTradingValue() { return tradingValue; }
+    public void setTradingValue(String tradingValue) { this.tradingValue = tradingValue; }
 
     public String getCode() { return code; }
     public void setCode(String code) { this.code = code; }

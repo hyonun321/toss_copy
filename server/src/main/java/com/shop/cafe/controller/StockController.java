@@ -36,6 +36,41 @@ public class StockController {
         StockApiResponse response = new StockApiResponse("0", "성공", stocks);
         return ResponseEntity.ok(response);
     }
+ // 미국 주식 거래대금 상위 조회
+    @GetMapping("/overseas/trade-value")
+    public ResponseEntity<StockApiResponse> getOverseasTradeValueRanking() {
+        List<StockInfo> stocks = stockService.getOverseasTradeValueRanking();
+        System.out.println("미국 주식 거래대금 상위:" + stocks);
+        StockApiResponse response = new StockApiResponse("0", "성공", stocks);
+        return ResponseEntity.ok(response);
+    }
+
+    // 미국 주식 거래량 상위 조회
+    @GetMapping("/overseas/volume")
+    public ResponseEntity<StockApiResponse> getOverseasVolumeRanking() {
+        List<StockInfo> stocks = stockService.getOverseasVolumeRanking();
+        System.out.println("미국 주식 거래량 상위:" + stocks);
+        StockApiResponse response = new StockApiResponse("0", "성공", stocks);
+        return ResponseEntity.ok(response);
+    }
+
+    // 미국 주식 급상승 순위 조회
+    @GetMapping("/overseas/rising")
+    public ResponseEntity<StockApiResponse> getOverseasRisingRanking() {
+        List<StockInfo> stocks = stockService.getOverseasRisingRanking();
+        System.out.println("미국 주식 급상승:" + stocks);
+        StockApiResponse response = new StockApiResponse("0", "성공", stocks);
+        return ResponseEntity.ok(response);
+    }
+
+    // 미국 주식 급하락 순위 조회
+    @GetMapping("/overseas/falling")
+    public ResponseEntity<StockApiResponse> getOverseasFallingRanking() {
+        List<StockInfo> stocks = stockService.getOverseasFallingRanking();
+        System.out.println("미국 주식 급하락:" + stocks);
+        StockApiResponse response = new StockApiResponse("0", "성공", stocks);
+        return ResponseEntity.ok(response);
+    }
  // 인기 주식 목록 조회
     @GetMapping("/popular")
     public ResponseEntity<StockApiResponse> getPopularStocks() {
