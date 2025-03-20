@@ -49,7 +49,6 @@ export function MarketHeader() {
         }
 
         const data = await response.json();
-        console.log(data);
         if (data.resultCode === '0' && Array.isArray(data.indices)) {
           const formattedIndices = data.indices.map((index: MarketIndex) => ({
             name: index.name,
@@ -86,7 +85,6 @@ export function MarketHeader() {
   };
 
   const formatChangeWithSign = (change: string, isNegative: boolean) => {
-    console.log(change);
     const numericChange = parseFloat(change.replace(/,/g, ''));
     // 부호 및 소수점 1자리로 포맷팅
     return isNegative

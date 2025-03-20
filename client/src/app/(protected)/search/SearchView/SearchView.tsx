@@ -120,7 +120,6 @@ export function SearchView() {
 
   // 주식 선택 처리 함수 수정
   const handleStockSelect = async (stock: BaseStock) => {
-    console.log('선택한 주식:', stock);
     setSelectedStock(stock);
 
     // 선택한 주식이 찜 목록에 있는지 확인
@@ -184,8 +183,6 @@ export function SearchView() {
 
   // 태그(검색 히스토리) 클릭 처리
   const handleTagClick = (tag: string) => {
-    console.log('선택한 태그:', tag);
-
     // 현재 쿼리 상태 업데이트
     setCurrentQuery(tag);
 

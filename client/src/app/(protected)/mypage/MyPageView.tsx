@@ -60,7 +60,6 @@ export function MyPageView() {
             setInitialLoading(false);
             return;
           }
-          console.log(data);
           const transformedData: TransformedStockItem[] = data.stocks.map(
             (item, index) => ({
               rank: index + 1,

@@ -24,8 +24,6 @@ const RegisterStep: React.FC = () => {
       pwd: plantLocation,
     };
 
-    console.log('회원가입 데이터:', userData);
-
     const success = await registerUser(userData);
 
     if (success) {
