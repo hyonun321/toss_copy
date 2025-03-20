@@ -108,7 +108,7 @@ export function MarketHeader() {
 
         setIsAnimating(false);
       }, 2000); // 애니메이션 지속 시간 (0.5초)
-    }, 6000); // 2초마다 롤링
+    }, 4000); // 2초마다 롤링
 
     return () => clearInterval(interval);
   }, []);
