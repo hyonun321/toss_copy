@@ -10,7 +10,7 @@ export const PageContainer = styled.div`
 export const SectionTitle = styled.h2`
   font-size: 20px;
   font-weight: 600;
-  margin: 32px 20px 16px;
+  margin: 20px 20px 16px;
 `;
 
 export const StockListContainer = styled.div`
