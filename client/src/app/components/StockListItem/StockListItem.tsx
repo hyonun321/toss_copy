@@ -24,7 +24,7 @@ type StockListItemProps = {
   stockName: string;
   price: string;
   changePercentage: string;
-  isPositiveChange: boolean;
+  isPositiveChange?: boolean;
   change?: string;
   isFavorite?: boolean;
   refreshData?: () => void;
