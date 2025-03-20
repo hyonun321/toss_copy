@@ -4,9 +4,10 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { isValidPassword } from '../utils/validation';
 
 interface LoginResponse {
+  status: string;
   nickname?: string;
   Authorization?: string;
-  msg?: string;
+  message?: string;
 }
 interface PasswordChangeRequest {
   currentPassword: string;
@@ -94,15 +95,19 @@ export const useAuthStore = create<AuthState>()(
           });
 
           const data: LoginResponse = await response.json();
-          sessionStorage.setItem('email', email); // 이메일 저장
-          if (data.Authorization && data.nickname) {
-            // 인증 정보 저장 (이메일 포함)
+
+          if (
+            data.status === 'success' &&
+            data.Authorization &&
+            data.nickname
+          ) {
+            sessionStorage.setItem('email', email);
             get().setAuth(data.Authorization, email, data.nickname);
             return { success: true };
           } else {
             return {
               success: false,
-              error: data.msg || '로그인에 실패했습니다.',
+              error: data.message || '로그인에 실패했습니다.',
             };
           }
         } catch (error) {
