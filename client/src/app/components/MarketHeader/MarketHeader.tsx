@@ -24,7 +24,7 @@ interface MarketIndex {
 }
 export function MarketHeader() {
   const router = useRouter();
-  const [marketData, setMarketData] = useState([]);
+  const [marketData, setMarketData] = useState<MarketIndex[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
   const [lastRefreshed, setLastRefreshed] = useState<number>(Date.now());
 
