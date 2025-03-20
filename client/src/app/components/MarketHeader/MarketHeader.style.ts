@@ -39,7 +39,7 @@ export const RollingList = styled.ul<{ isAnimating: boolean }>`
 export const RollingItem = styled.li`
   display: flex;
   justify-content: flex-start;
-  align-items: center;
+  align-items: baseline; /* Changed from center to baseline */
   height: 30px;
   font-size: 18px;
   font-weight: 600;
@@ -58,12 +58,16 @@ export const MarketValue = styled.span<{ negative?: boolean }>`
   color: ${({ negative }) => (negative ? theme.colors.blue : theme.colors.red)};
 `;
 
+export const MarketChangePercent = styled.span<{ negative?: boolean }>`
+  font-size: 14px;
+  font-weight: 400;
+  color: ${({ negative }) => (negative ? theme.colors.blue : theme.colors.red)};
+`;
 export const MarketChange = styled.span<{ negative?: boolean }>`
   font-size: 18px;
   font-weight: 600;
   color: ${({ negative }) => (negative ? theme.colors.blue : theme.colors.red)};
 `;
-
 export const IconContainer = styled.div`
   display: flex;
   gap: 16px;

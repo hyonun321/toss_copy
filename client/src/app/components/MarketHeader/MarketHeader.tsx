@@ -11,6 +11,7 @@ import {
   IconButton,
   MarketValue,
   MarketChange,
+  MarketChangePercent,
 } from './MarketHeader.style';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -79,20 +80,18 @@ export function MarketHeader() {
 
   // 숫자 포맷팅 함수
   const formatValue = (value: string) => {
-    // 문자열에서 숫자만 추출
     const numericValue = parseFloat(value.replace(/,/g, ''));
-    // 천 단위 콤마 추가
+
     return numericValue.toLocaleString();
   };
 
-  // 변화율 포맷팅 함수 (부호 포함)
   const formatChangeWithSign = (change: string, isNegative: boolean) => {
-    // 문자열에서 숫자만 추출
+    console.log(change);
     const numericChange = parseFloat(change.replace(/,/g, ''));
     // 부호 및 소수점 1자리로 포맷팅
     return isNegative
-      ? `-${Math.abs(numericChange).toFixed(1)}%`
-      : `+${Math.abs(numericChange).toFixed(1)}%`;
+      ? `-${Math.abs(numericChange).toFixed(1)}`
+      : `+${Math.abs(numericChange).toFixed(1)}`;
   };
 
   useEffect(() => {
@@ -126,6 +125,9 @@ export function MarketHeader() {
                 <MarketChange negative={item.negative}>
                   {item.change}
                 </MarketChange>
+                <MarketChangePercent negative={item.negative}>
+                  ({item.changeRate}%)
+                </MarketChangePercent>
               </RollingItem>
             ))}
           </RollingList>
