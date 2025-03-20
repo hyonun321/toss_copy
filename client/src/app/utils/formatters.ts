@@ -11,6 +11,11 @@ export function formatChange(change: string) {
   return numericChange >= 0 ? `+${change}` : change;
 }
 
+export function formatPositiveChange(change: string) {
+  if (change.startsWith('-')) return false;
+  return true;
+}
+
 export function formatPercentage(percentage: string) {
   if (!percentage) return '0%';
   const cleanPercentage = percentage.replace(/%/g, '');
