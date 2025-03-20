@@ -9,13 +9,38 @@ export const HeaderContainer = styled.div`
   width: 100%;
 `;
 
-export const MarketInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
+export const MarketInfoWrapper = styled.div`
+  width: 200px;
+  height: 30px;
+  overflow: hidden;
+  position: relative;
 `;
 
-export const MarketName = styled.span`
+export const RollingContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+`;
+
+export const RollingList = styled.ul<{ isAnimating: boolean }>`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  transform: ${({ isAnimating }) =>
+    isAnimating ? 'translateY(-30px)' : 'translateY(0)'};
+  transition: ${({ isAnimating }) =>
+    isAnimating ? 'transform 2s ease-in-out' : 'none'};
+`;
+
+export const RollingItem = styled.li`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 30px;
   font-size: 18px;
   font-weight: 600;
   color: ${theme.colors.black};
