@@ -1,29 +1,32 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { TopBar } from '@/app/components/SettingTopbar/TopBar';
 import { UserInfo } from '@/app/components/UserInfo/UserInfo';
 import { Option } from '@/app/components/Option/Option';
-import styles from './page.module.css';
 import BottomSheet from '@/app/components/BottomSheet/BottomSheet';
-import { useState } from 'react';
 import BottomSheetContent from '@/app/components/BottomSheet/BottomSheetContent';
-import { useAuthStore } from '@/app/stores/authStore';
+import { SettingPageContainer, Content, Divider } from './styles';
+import { useSetting } from '@/app/hooks/useSetting';
 
-const SettingPage = () => {
-  const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
-  const { nickname, email, logout } = useAuthStore();
-  const handleLogout = () => {
-    setIsOpen(true);
-  };
+export const SettingPage = () => {
+  const {
+    isOpen,
+    nickname,
+    email,
+    handleLogout,
+    handleClose,
+    handleConfirmLogout,
+    handleNicknameChange,
+    handlePasswordChange,
+  } = useSetting();
+
   return (
-    <div className={styles.settingPage}>
+    <SettingPageContainer>
       <TopBar />
       <UserInfo username={nickname} email={email} />
-      <div className={styles.divider} />
-      <div className={styles.content}>
-        {/* <Option
+      <Divider />
+      <Content>
+        <Option
           iconSrc="/images/moon.png"
           label="다크 모드"
           hasToggle
@@ -32,12 +35,12 @@ const SettingPage = () => {
         <Option
           iconSrc="/images/user.png"
           label="닉네임 변경"
-          onClick={() => router.push('/nickname')}
+          onClick={handleNicknameChange}
         />
         <Option
           iconSrc="/images/lock.png"
           label="비밀번호 변경"
-          onClick={() => router.push('/password')}
+          onClick={handlePasswordChange}
         />
         <Option
           iconSrc="/images/unlock.png"
@@ -51,17 +54,14 @@ const SettingPage = () => {
               leftIcon="/images/cancel.png"
               leftButtonText="취소"
               rightButtonText="로그아웃"
-              onClose={() => setIsOpen(false)}
-              onLeftClick={() => setIsOpen(false)}
-              onRightClick={() => {
-                logout();
-                router.push('/');
-              }}
+              onClose={handleClose}
+              onLeftClick={handleClose}
+              onRightClick={handleConfirmLogout}
             />
           </BottomSheet>
         )}
-      </div>
-    </div>
+      </Content>
+    </SettingPageContainer>
   );
 };
 

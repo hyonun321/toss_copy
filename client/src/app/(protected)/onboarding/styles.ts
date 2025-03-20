@@ -1,4 +1,7 @@
-.container {
+import styled from '@emotion/styled';
+import { motion } from 'framer-motion';
+
+export const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -7,12 +10,12 @@
   background-color: #f9f9f9;
   overflow: hidden;
   position: relative;
-}
+`;
 
-.slide {
+export const Slide = styled(motion.div)`
   position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-}
+`;

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import REGISTER from '@/app/(public)/register/registerview';
+import { Register as REGISTER } from '@/app/(public)/register/registerview';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/app/stores/authStore';
 

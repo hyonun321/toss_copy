@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './InputField.module.css';
+import { InputContainer, StyledInput, Label } from './styles';
 
 interface InputFieldProps {
   type: 'email' | 'password' | 'text';
@@ -15,17 +15,17 @@ export const InputField: React.FC<InputFieldProps> = ({
   onChange,
 }) => {
   return (
-    <div className={styles.inputContainer}>
-      <input
-        className={`${styles.input} ${value ? styles.filled : ''}`}
+    <InputContainer>
+      <StyledInput
+        className={value ? 'filled' : ''}
         type={type}
         value={value}
         onChange={onChange}
         required
       />
-      <label className={styles.label}>
+      <Label>
         <span>{label}</span>
-      </label>
-    </div>
+      </Label>
+    </InputContainer>
   );
 };
