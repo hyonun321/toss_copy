@@ -1,6 +1,9 @@
-export function formatPrice(price: string) {
+export function formatPrice(price: string, exchangeCode: string) {
   if (!price) return '0원';
   const numericPrice = price.replace(/[^\d.-]/g, '');
+  if (exchangeCode !== 'KRX') {
+    return `${parseInt(numericPrice).toLocaleString()}$`;
+  }
   return `${parseInt(numericPrice).toLocaleString()}원`;
 }
 
