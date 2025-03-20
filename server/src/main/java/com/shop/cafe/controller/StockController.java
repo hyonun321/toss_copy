@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin({"http://127.0.0.1:5500/","http://localhost:3000"})
+@CrossOrigin({"http://127.0.0.1:5500/","http://127.0.0.1:3000/","http://localhost:3000"})
 @RequestMapping("/api/stocks")
 public class StockController {
 
