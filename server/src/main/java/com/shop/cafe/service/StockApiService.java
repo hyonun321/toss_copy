@@ -45,68 +45,166 @@ public class StockApiService {
         // 서비스 시작 시 저장된 토큰 로드
         loadTokenFromFile();
     }
-    
-    // 코드별 하나의 주식 정보만 불러오기
-    public StockInfo getStockByCode(String code) {
+ // 코드별 주식 정보 불러오기 (종목명, 거래소 코드 포함)
+    public StockInfo getStockByCode(String code, String name, String exchangeCode) {
         try {
             String token = getToken();
             if (token == null) {
                 logger.warning("토큰 발급 실패");
                 return null;
             }
-            
-            // 국내주식 상세 조회 API URL
-            String url = apiUrl + "/uapi/domestic-stock/v1/quotations/inquire-price";
-            
-            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
-                .queryParam("fid_cond_mrkt_div_code", "J")
-                .queryParam("fid_input_iscd", code);
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("authorization", "Bearer " + token);
-            headers.set("appkey", appKey);
-            headers.set("appsecret", appSecret);
-            headers.set("tr_id", "FHKST01010100");  // 주식 현재가 시세 TR ID
-            headers.set("custtype", "P");
-            
-            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-            
-            ResponseEntity<String> response = restTemplate.exchange(
-                builder.toUriString(),
-                HttpMethod.GET,
-                requestEntity,
-                String.class
-            );
-            
-            if (response.getStatusCode() == HttpStatus.OK) {
-                JSONObject jsonResponse = new JSONObject(response.getBody());
-                JSONObject outputObj = jsonResponse.getJSONObject("output");
-                
-                // API 응답에서 필요한 정보 추출
-                StockInfo stock = new StockInfo(
-                    code,
-                    outputObj.getString("hts_kor_isnm"),  // 종목명
-                    outputObj.getString("stck_prpr"),     // 현재가
-                    outputObj.getString("prdy_vrss"),     // 대비
-                    outputObj.getString("prdy_ctrt"),     // 등락률
-                    outputObj.getString("acml_vol"),      // 거래량
-                    "KRX"                                // 거래소 코드
-                );
-                
-                stock.setPositiveChange(outputObj.getString("prdy_vrss_sign").equals("2") || 
-                                       outputObj.getString("prdy_vrss_sign").equals("1"));
-                
-                return stock;
+
+            // 거래소 코드에 따라 API 선택
+            if ("KRX".equals(exchangeCode)) {
+                // 국내주식 API 호출
+                return getDomesticStockInfo(token, code, name);
             } else {
-                logger.warning("코드 " + code + " 조회 실패: " + response.getStatusCode());
-                return null;
+                // 해외주식 API 호출
+                return getOverseasStockInfo(token, code, name, exchangeCode);
             }
         } catch (Exception e) {
             logger.warning("코드 " + code + " 조회 중 예외 발생: " + e.getMessage());
             return null;
         }
     }
+
+    // 기존 메서드와의 호환성을 위한 오버로딩
+    public StockInfo getStockByCode(String code, String name) {
+        // 코드 패턴으로 거래소 추측
+        String exchangeCode = code.matches("^[0-9]+$") ? "KRX" : "NAS";
+        return getStockByCode(code, name, exchangeCode);
+    }
+
+ // 국내주식 정보 조회 메서드
+ private StockInfo getDomesticStockInfo(String token, String code, String name) {
+     try {
+         String url = apiUrl + "/uapi/domestic-stock/v1/quotations/inquire-price";
+         
+         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+             .queryParam("FID_COND_MRKT_DIV_CODE", "J")
+             .queryParam("FID_INPUT_ISCD", code);
+         
+         HttpHeaders headers = new HttpHeaders();
+         headers.setContentType(MediaType.APPLICATION_JSON);
+         headers.set("authorization", "Bearer " + token);
+         headers.set("appkey", appKey);
+         headers.set("appsecret", appSecret);
+         headers.set("tr_id", "FHKST01010100"); // 주식 현재가 시세 TR ID
+         headers.set("custtype", "P");
+         
+         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+         
+         ResponseEntity<String> response = restTemplate.exchange(
+             builder.toUriString(),
+             HttpMethod.GET,
+             requestEntity,
+             String.class
+         );
+         
+         if (response.getStatusCode() == HttpStatus.OK) {
+             JSONObject jsonResponse = new JSONObject(response.getBody());
+             
+             if (!jsonResponse.has("output")) {
+                 logger.warning("API 응답에 'output' 필드가 없습니다: " + response.getBody());
+                 return null;
+             }
+             
+             JSONObject outputObj = jsonResponse.getJSONObject("output");
+             
+             StockInfo stock = new StockInfo(
+                 outputObj.getString("stck_shrn_iscd"), // 종목 코드
+                 name, // 받아온 종목명 사용
+                 outputObj.getString("stck_prpr"), // 현재가
+                 outputObj.getString("prdy_vrss"), // 대비
+                 outputObj.getString("prdy_ctrt"), // 등락률
+                 outputObj.getString("acml_vol"), // 거래량
+                 "KRX" // 거래소 코드
+             );
+             
+             stock.setPositiveChange(outputObj.getString("prdy_vrss_sign").equals("2") ||
+                                    outputObj.getString("prdy_vrss_sign").equals("1"));
+             
+             return stock;
+         } else {
+             logger.warning("코드 " + code + " 조회 실패: " + response.getStatusCode());
+             return null;
+         }
+     } catch (Exception e) {
+         logger.warning("국내주식 " + code + " 조회 중 예외 발생: " + e.getMessage());
+         return null;
+     }
+ }
+//해외주식 종목코드로 거래소 코드 유추 (추측 기반, 정확한 매핑은 DB 필요)
+private String getExchangeCodeForOverseas(String code) {
+  // 기본적으로 나스닥 거래소로 가정
+  // 실제로는 DB나 별도 매핑 테이블을 통해 정확한 거래소 코드 반환 필요
+  return "NAS";
+}
+
+ // 해외주식 정보 조회 메서드
+ private StockInfo getOverseasStockInfo(String token, String code, String name, String exchangeCode) {
+     try {
+         // 해외주식 시세 조회 API 호출
+         String url = apiUrl + "/uapi/overseas-price/v1/quotations/price";
+         
+         
+         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+             .queryParam("AUTH", "")
+             .queryParam("EXCD", exchangeCode) // 거래소 코드 (NAS, NYS 등)
+             .queryParam("SYMB", code);        // 종목 코드
+         
+         HttpHeaders headers = new HttpHeaders();
+         headers.setContentType(MediaType.APPLICATION_JSON);
+         headers.set("authorization", "Bearer " + token);
+         headers.set("appkey", appKey);
+         headers.set("appsecret", appSecret);
+         headers.set("tr_id", "HHDFS00000300"); // 해외주식 현재가 시세 TR ID
+         headers.set("custtype", "P");
+         
+         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+         
+         ResponseEntity<String> response = restTemplate.exchange(
+             builder.toUriString(),
+             HttpMethod.GET,
+             requestEntity,
+             String.class
+         );
+         
+         if (response.getStatusCode() == HttpStatus.OK) {
+             JSONObject jsonResponse = new JSONObject(response.getBody());
+             
+             if (!jsonResponse.has("output")) {
+                 logger.warning("API 응답에 'output' 필드가 없습니다: " + response.getBody());
+                 return null;
+             }
+             
+             JSONObject outputObj = jsonResponse.getJSONObject("output");
+             
+             // API 응답에서 필요한 정보 추출하되, 해외주식 API는 응답 필드명이 다름
+             StockInfo stock = new StockInfo(
+                 code, // 종목 코드
+                 name, // 받아온 종목명 사용
+                 outputObj.getString("last"), // 현재가
+                 outputObj.getString("diff"), // 대비
+                 outputObj.getString("rate"), // 등락률
+                 outputObj.getString("tvol"), // 거래량
+                 exchangeCode // 거래소 코드
+             );
+             
+             // sign 값에 따라 상승/하락 설정 (1,2: 상승, 4,5: 하락)
+             String sign = outputObj.getString("sign");
+             stock.setPositiveChange(sign.equals("1") || sign.equals("2"));
+             
+             return stock;
+         } else {
+             logger.warning("코드 " + code + " 조회 실패: " + response.getStatusCode());
+             return null;
+         }
+     } catch (Exception e) {
+         logger.warning("해외주식 " + code + " 조회 중 예외 발생: " + e.getMessage());
+         return null;
+     }
+ }
     
     /**
      * 토큰을 파일에서 로드합니다.

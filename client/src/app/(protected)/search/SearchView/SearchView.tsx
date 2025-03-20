@@ -5,6 +5,8 @@ import { SearchTags } from '@/app/components/SearchTags/SearchTags';
 import { PopularStocks } from '@/app/components/PopularStocks/PopularStocks';
 import { SearchResults } from '@/app/components/SearchResults/SearchResults';
 import { SearchViewContainer, SearchContent } from './SearchView.style';
+import BottomSheet from '@/app/components/BottomSheet/BottomSheet';
+import BottomSheetContent from '@/app/components/BottomSheet/BottomSheetContent';
 import { BaseStock } from '@/app/types/stock';
 import {
   deleteSearchQuery,
@@ -24,7 +26,9 @@ export function SearchView() {
   const [popularStocks, setPopularStocks] = useState<BaseStock[]>([]);
   const [loading, setLoading] = useState(true);
   const { email } = useAuthStore();
-
+  const [selectedStock, setSelectedStock] = useState<BaseStock | null>(null);
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
   // 인기 주식 데이터 가져오기
   useEffect(() => {
     const getPopularStocks = async () => {
@@ -114,8 +118,68 @@ export function SearchView() {
     setCurrentQuery(query);
   };
 
-  const handleStockSelect = (stock: BaseStock) => {
+  // 주식 선택 처리 함수 수정
+  const handleStockSelect = async (stock: BaseStock) => {
     console.log('선택한 주식:', stock);
+    setSelectedStock(stock);
+
+    // 선택한 주식이 찜 목록에 있는지 확인
+    if (email) {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/likes/isLiked?email=${email}&stockCode=${stock.symbol}`,
+        );
+
+        if (response.ok) {
+          const isLiked = await response.json();
+          setIsFavorite(isLiked);
+        }
+      } catch (error) {
+        console.error('좋아요 상태 확인 실패:', error);
+        setIsFavorite(false);
+      }
+    }
+
+    // 바텀시트 열기
+    setIsBottomSheetOpen(true);
+  };
+
+  // 찜하기 처리 함수
+  const handleFavoriteConfirm = async () => {
+    if (!email || !selectedStock) return;
+
+    try {
+      const url = isFavorite
+        ? 'http://localhost:8080/api/likes/remove'
+        : 'http://localhost:8080/api/likes/add';
+      let exchangeCode = 'KRX';
+      if (selectedStock.symbol.match(/[A-Z]/)) {
+        exchangeCode = 'NAS'; // 기본 해외거래소는 나스닥으로 가정
+      }
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          stockCode: selectedStock.symbol,
+          stockName: selectedStock.name,
+          exchangeCode: exchangeCode,
+        }),
+      });
+
+      if (response.ok) {
+        setIsFavorite(!isFavorite);
+        // 성공 메시지나 피드백 표시 가능
+      } else {
+        console.error('찜하기 변경 실패');
+      }
+    } catch (error) {
+      console.error('찜하기 변경 중 오류 발생:', error);
+    } finally {
+      setIsBottomSheetOpen(false);
+    }
   };
 
   // 태그(검색 히스토리) 클릭 처리
@@ -159,7 +223,7 @@ export function SearchView() {
         ) : (
           <>
             {historyLoading ? (
-              <SkeletonSearchTags /> // 스켈레톤 UI 컴포넌트 (구현 필요)
+              <SkeletonSearchTags />
             ) : (
               <SearchTags
                 initialTags={searchHistory}
@@ -175,6 +239,29 @@ export function SearchView() {
           </>
         )}
       </SearchContent>
+
+      {/* 바텀시트 모달 추가 */}
+      {isBottomSheetOpen && selectedStock && (
+        <BottomSheet height="20vh">
+          <BottomSheetContent
+            title={
+              <>
+                {selectedStock.name}을(를)
+                <br />
+                {isFavorite
+                  ? '관심종목에서 삭제하시겠습니까?'
+                  : '관심종목에 등록하시겠습니까?'}
+              </>
+            }
+            leftIcon="/images/cancel.png"
+            leftButtonText="취소"
+            rightButtonText={isFavorite ? '삭제' : '등록'}
+            onClose={() => setIsBottomSheetOpen(false)}
+            onLeftClick={() => setIsBottomSheetOpen(false)}
+            onRightClick={handleFavoriteConfirm}
+          />
+        </BottomSheet>
+      )}
     </SearchViewContainer>
   );
 }

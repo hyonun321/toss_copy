@@ -56,7 +56,6 @@ export function MyPageView() {
         }
 
         const data: ApiResponse = await response.json();
-
         if (data.resultCode === '0' && Array.isArray(data.stocks)) {
           if (data.stocks.length === 0) {
             setFavoriteStocks([]);
@@ -68,15 +67,14 @@ export function MyPageView() {
               rank: index + 1,
               stockCode: item.code,
               stockName: item.name,
-              price: formatPrice(item.price.toString()),
+              price: formatPrice(item.price.toString(), item.exchangeCode),
               change: formatChange(item.change),
+              exchangeCode: item.exchangeCode,
               changePercentage: formatPercentage(item.changeRate.toString()),
               isPositiveChange: formatPositiveChange(item.change),
               isFavorite: true,
             }),
           );
-          console.log(transformedData);
-
           setFavoriteStocks(transformedData);
         } else {
           throw new Error('데이터 형식 오류');

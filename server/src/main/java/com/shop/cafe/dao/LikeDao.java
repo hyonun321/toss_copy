@@ -4,8 +4,6 @@ import com.shop.cafe.dto.Like;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +17,8 @@ public class LikeDao {
     }
 
     public void addLike(Like like) {
-        String sql = "INSERT INTO likes (email, stock_code) VALUES (?, ?)";
-        jdbcTemplate.update(sql, like.getEmail(), like.getStockCode());
+        String sql = "INSERT INTO likes (email, stock_code, stock_name, exchange_code) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql, like.getEmail(), like.getStockCode(), like.getStockName(), like.getExchangeCode());
     }
 
     public void removeLike(Like like) {
@@ -33,12 +31,14 @@ public class LikeDao {
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email, stockCode);
         return count != null && count > 0;
     }
-    
+
     public List<Map<String, String>> getLikedStocks(String email) {
-        String sql = "SELECT stock_code FROM likes WHERE email = ?";
+        String sql = "SELECT stock_code, stock_name, exchange_code FROM likes WHERE email = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             Map<String, String> map = new HashMap<>();
             map.put("stock_code", rs.getString("stock_code"));
+            map.put("stock_name", rs.getString("stock_name"));
+            map.put("exchange_code", rs.getString("exchange_code"));
             return map;
         }, email);
     }
