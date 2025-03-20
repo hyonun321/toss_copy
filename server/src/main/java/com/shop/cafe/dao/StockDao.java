@@ -37,7 +37,16 @@ public class StockDao {
         stocksMap.put(category, new ArrayList<>(stocks));
         lastUpdatedMap.put(category, LocalDateTime.now());
     }
-
+ // 개별 주식 정보 저장
+    public void saveStockInfo(String code, StockInfo stockInfo) {
+        // 임시 맵 생성
+        List<StockInfo> singleStockList = new ArrayList<>();
+        singleStockList.add(stockInfo);
+        
+        // 해당 코드에 대한 정보만 저장하는 맵 생성
+        stocksMap.put("STOCK_" + code, singleStockList);
+        lastUpdatedMap.put("STOCK_" + code, LocalDateTime.now());
+    }
     // 국내 주식 정보 조회
     public List<StockInfo> getDomesticStocks() {
         return stocksMap.getOrDefault(DOMESTIC_KEY, new ArrayList<>());
