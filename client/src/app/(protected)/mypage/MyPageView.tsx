@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { CategoryTabs } from '@/app/components/CategoryTabs/CategoryTabs';
 import { StockListItem } from '@/app/components/StockListItem/StockListItem';
 import { BottomNavigation } from '@/app/components/BottomNavigation/BottomNavigation';
-import { ALL_ENDPOINTS, Endpoint } from '@/app/constants/tabMappings';
+import { Endpoint } from '@/app/constants/tabMappings';
 import { ApiResponse, TransformedStockItem } from '@/app/types';
 import {
   PageContainer,
@@ -17,8 +17,10 @@ import {
   formatPrice,
   formatChange,
   formatPercentage,
+  formatPositiveChange,
 } from '@/app/utils/formatters';
 import Image from 'next/image';
+import { useAuthStore } from '@/app/stores/authStore';
 
 export function MyPageView() {
   const [activeTab, setActiveTab] = useState<Endpoint>('all');
@@ -28,68 +30,57 @@ export function MyPageView() {
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<number>(Date.now());
-
+  const { email } = useAuthStore();
   const refreshData = () => {
     setLastRefreshed(Date.now());
   };
 
   useEffect(() => {
     async function fetchFavoriteStocks() {
+      if (!email) {
+        setInitialLoading(false);
+        setFavoriteStocks([]);
+        return;
+      }
+
       setInitialLoading(true);
       setError(null);
 
       try {
-        const results = await Promise.all(
-          ALL_ENDPOINTS.map(async (category) => {
-            const response = await fetch(
-              `http://localhost:8080/api/stocks/${category}`,
-            );
-
-            if (!response.ok) {
-              throw new Error(`${category} 데이터를 가져오는 중 오류 발생`);
-            }
-
-            const data: ApiResponse = await response.json();
-            return { category, data };
-          }),
+        const response = await fetch(
+          `http://localhost:8080/api/likes/stocks?email=${email}`,
         );
 
-        let allFavoriteStocks: TransformedStockItem[] = [];
+        if (!response.ok) {
+          throw new Error('좋아요한 종목 정보를 가져오는 중 오류 발생');
+        }
 
-        results.forEach(({ category, data }) => {
-          if (data.resultCode === '0' && Array.isArray(data.stocks)) {
-            const transformedData: TransformedStockItem[] = data.stocks.map(
-              (item, index) => ({
-                category: category,
-                rank: index + 1,
-                stockCode: item.code,
-                stockName: item.name,
-                price: formatPrice(item.price.toString()),
-                change: formatChange(item.change),
-                changePercentage: formatPercentage(item.changeRate.toString()),
-                isPositiveChange:
-                  item.isPositiveChange !== undefined
-                    ? item.isPositiveChange
-                    : !item.change.startsWith('-'),
-                isFavorite: true,
-              }),
-            );
+        const data: ApiResponse = await response.json();
 
-            const randomFavorites = transformedData.slice(
-              0,
-              Math.floor(Math.random() * 3) + 2,
-            );
-
-            allFavoriteStocks = [...allFavoriteStocks, ...randomFavorites];
+        if (data.resultCode === '0' && Array.isArray(data.stocks)) {
+          if (data.stocks.length === 0) {
+            setFavoriteStocks([]);
+            setInitialLoading(false);
+            return;
           }
-        });
+          const transformedData: TransformedStockItem[] = data.stocks.map(
+            (item, index) => ({
+              rank: index + 1,
+              stockCode: item.code,
+              stockName: item.name,
+              price: formatPrice(item.price.toString()),
+              change: formatChange(item.change),
+              changePercentage: formatPercentage(item.changeRate.toString()),
+              isPositiveChange: formatPositiveChange(item.change),
+              isFavorite: true,
+            }),
+          );
+          console.log(transformedData);
 
-        allFavoriteStocks = allFavoriteStocks.map((stock, index) => ({
-          ...stock,
-          rank: index + 1,
-        }));
-
-        setFavoriteStocks(allFavoriteStocks);
+          setFavoriteStocks(transformedData);
+        } else {
+          throw new Error('데이터 형식 오류');
+        }
       } catch (err) {
         console.error('데이터 로딩 중 오류 발생:', err);
         setError(
@@ -103,8 +94,7 @@ export function MyPageView() {
     }
 
     fetchFavoriteStocks();
-  }, [lastRefreshed]);
-
+  }, [email, lastRefreshed]);
   const handleTabChange = (tabType: Endpoint) => {
     setActiveTab(tabType);
     refreshData();
@@ -130,7 +120,7 @@ export function MyPageView() {
   return (
     <PageContainer>
       <div style={{ padding: '20px', fontSize: '18px', fontWeight: 'bold' }}>
-        내 종목 보기
+        내 관심종목
       </div>
 
       <CategoryTabs
@@ -161,6 +151,16 @@ export function MyPageView() {
         </ErrorMessage>
       )}
 
+      {!initialLoading && !error && favoriteStocks.length === 0 && (
+        <div
+          style={{ textAlign: 'center', padding: '40px 20px', color: '#666' }}
+        >
+          아직 찜한 종목이 없습니다.
+          <br />
+          관심 있는 주식을 찜해보세요!
+        </div>
+      )}
+
       <StockListContainer>
         {filteredStocks.map((stock) => (
           <StockListItem
@@ -173,6 +173,7 @@ export function MyPageView() {
             changePercentage={stock.changePercentage}
             isPositiveChange={stock.isPositiveChange}
             isFavorite={stock.isFavorite}
+            refreshData={refreshData}
           />
         ))}
       </StockListContainer>

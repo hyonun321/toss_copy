@@ -13,7 +13,7 @@ import {
 } from './BottomSheetContent.style';
 
 interface BottomSheetContentProps {
-  title: string;
+  title: string | JSX.Element;
   imageSrc?: string;
   imageAlt?: string;
   description?: string;
