@@ -861,89 +861,12 @@ private String getExchangeCodeForOverseas(String code) {
     }
 
     /**
-     * 미국 주식 급상승 종목 조회
-     */
-    public List<StockInfo> getOverseasRisingRanking() {
-        try {
-            String token = getToken();
-            if (token == null) {
-                logger.warning("토큰 발급 실패로 정적 미국 주식 데이터 반환");
-                return getFallbackOverseasStocks();
-            }
-            
-            // 미국 주식 급상승 상위 조회 API URL
-            String url = apiUrl + "/uapi/overseas-stock/v1/ranking/updown-rate";
-            
-            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
-                .queryParam("EXCD", "NAS") // 나스닥 거래소 - 필요에 따라 변경 가능
-                .queryParam("CNT", "30");  // 최대 30개 데이터 조회
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("authorization", "Bearer " + token);
-            headers.set("appkey", appKey);
-            headers.set("appsecret", appSecret);
-            headers.set("tr_id", "HHDFS76290000"); // 해외주식 상승률 상위 TR ID
-            headers.set("custtype", "P");
-            headers.set("GUBN", "1");
-            
-            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-            
-            ResponseEntity<String> response = restTemplate.exchange(
-                builder.toUriString(),
-                HttpMethod.GET,
-                requestEntity,
-                String.class
-            );
-            
-            if (response.getStatusCode() == HttpStatus.OK) {
-                logger.info("미국 주식 급상승 상위 조회 성공");
-                
-                JSONObject jsonResponse = new JSONObject(response.getBody());
-                
-                if (!jsonResponse.has("output2")) {
-                    logger.warning("API 응답에 'output2' 필드가 없습니다: " + response.getBody());
-                    return getFallbackOverseasStocks();
-                }
-                
-                JSONArray stockArray = jsonResponse.getJSONArray("output2");
-                List<StockInfo> stocks = new ArrayList<>();
-                
-                for (int i = 0; i < stockArray.length(); i++) {
-                    JSONObject stockJson = stockArray.getJSONObject(i);
-                    
-                    StockInfo stock = new StockInfo(
-                        stockJson.getString("symb"),        // 종목 코드
-                        stockJson.getString("name"),        // 종목명
-                        stockJson.getString("last"),        // 현재가
-                        stockJson.getString("diff"),        // 대비
-                        stockJson.getString("rate"),        // 등락률
-                        stockJson.getString("tvol"),        // 거래량
-                        "NAS"                              // 거래소 코드
-                    );
-                    
-                    stock.setRank(i + 1);
-                    stock.setPositiveChange(true); // 급상승이므로 무조건 상승
-                    stock.setExchangeCode("NAS"); // 거래소 코드 설정
-                    
-                    stocks.add(stock);
-                }
-                
-                return stocks;
-            } else {
-                throw new RuntimeException("미국 주식 급상승 상위 조회 실패: " + response.getStatusCode());
-            }
-        } catch (Exception e) {
-            logger.warning("API 호출 실패로 정적 미국 주식 데이터 반환: " + e.getMessage());
-            return getFallbackOverseasStocks();
-        }
-    }
-    /**
      * 미국 주식 거래대금 상위 종목 조회
      */
     public List<StockInfo> getOverseasTradeValueRanking() {
         try {
             String token = getToken();
+            System.out.println(token);
             if (token == null) {
                 logger.warning("토큰 발급 실패로 정적 미국 주식 데이터 반환");
                 return getFallbackOverseasStocks();
@@ -973,7 +896,7 @@ private String getExchangeCodeForOverseas(String code) {
                 requestEntity,
                 String.class
             );
-            
+            System.out.println(response);
             if (response.getStatusCode() == HttpStatus.OK) {
                 logger.info("미국 주식 거래대금 상위 조회 성공");
                 
@@ -1041,6 +964,85 @@ private String getExchangeCodeForOverseas(String code) {
             return getFallbackOverseasStocks();
         }
     }
+
+    /**
+     * 미국 주식 급상승 종목 조회
+     */
+    public List<StockInfo> getOverseasRisingRanking() {
+        try {
+            String token = getToken();
+            if (token == null) {
+                logger.warning("토큰 발급 실패로 정적 미국 주식 데이터 반환");
+                return getFallbackOverseasStocks();
+            }
+            
+            // 미국 주식 급상승 상위 조회 API URL
+            String url = apiUrl + "/uapi/overseas-stock/v1/ranking/updown-rate";
+            
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+                .queryParam("EXCD", "NAS")
+                .queryParam("CNT", "30");  // 최대 30개 데이터 조회
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("authorization", "Bearer " + token);
+            headers.set("appkey", appKey);
+            headers.set("appsecret", appSecret);
+            headers.set("tr_id", "HHDFS76290000"); // 해외주식 상승률 상위 TR ID
+            headers.set("custtype", "P");
+            headers.set("GUBN", "1");
+            
+            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+            
+            ResponseEntity<String> response = restTemplate.exchange(
+                builder.toUriString(),
+                HttpMethod.GET,
+                requestEntity,
+                String.class
+            );
+            
+            if (response.getStatusCode() == HttpStatus.OK) {
+                logger.info("미국 주식 급상승 상위 조회 성공");
+                
+                JSONObject jsonResponse = new JSONObject(response.getBody());
+                
+                if (!jsonResponse.has("output2")) {
+                    logger.warning("API 응답에 'output2' 필드가 없습니다: " + response.getBody());
+                    return getFallbackOverseasStocks();
+                }
+                
+                JSONArray stockArray = jsonResponse.getJSONArray("output2");
+                List<StockInfo> stocks = new ArrayList<>();
+                
+                for (int i = 0; i < stockArray.length(); i++) {
+                    JSONObject stockJson = stockArray.getJSONObject(i);
+                    
+                    StockInfo stock = new StockInfo(
+                        stockJson.getString("symb"),        // 종목 코드
+                        stockJson.getString("name"),        // 종목명
+                        stockJson.getString("last"),        // 현재가
+                        stockJson.getString("diff"),        // 대비
+                        stockJson.getString("rate"),        // 등락률
+                        stockJson.getString("tvol"),        // 거래량
+                        "NAS"                              // 거래소 코드
+                    );
+                    
+                    stock.setRank(i + 1);
+                    stock.setPositiveChange(true); // 급상승이므로 무조건 상승
+                    stock.setExchangeCode("NAS"); // 거래소 코드 설정
+                    
+                    stocks.add(stock);
+                }
+                
+                return stocks;
+            } else {
+                throw new RuntimeException("미국 주식 급상승 상위 조회 실패: " + response.getStatusCode());
+            }
+        } catch (Exception e) {
+            logger.warning("API 호출 실패로 정적 미국 주식 데이터 반환: " + e.getMessage());
+            return getFallbackOverseasStocks();
+        }
+    }
     /**
      * 미국 주식 급하락 종목 조회
      */
@@ -1056,8 +1058,8 @@ private String getExchangeCodeForOverseas(String code) {
             String url = apiUrl + "/uapi/overseas-stock/v1/ranking/updown-rate";
             
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
-                .queryParam("EXCD", "NAS") // 나스닥 거래소 - 필요에 따라 변경 가능
-                .queryParam("CNT", "30");  // 최대 30개 데이터 조회
+                .queryParam("EXCD", "NAS")
+        	    .queryParam("CNT", "30");  // 최대 30개 데이터 조회
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -1518,7 +1520,6 @@ private String getExchangeCodeForOverseas(String code) {
                 requestEntity,
                 String.class
             );
-            System.out.println("체크해보자 이녀석은"+indexCode+indexName+response);
             if (response.getStatusCode() == HttpStatus.OK) {
                 JSONObject jsonResponse = new JSONObject(response.getBody());
                 

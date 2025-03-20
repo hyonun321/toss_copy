@@ -100,7 +100,6 @@ export function HomeView() {
               const response = await fetch(
                 `http://localhost:8080/api/stocks/${category}`,
               );
-
               if (!response.ok) {
                 console.warn(
                   `${category} 데이터 로드 실패: ${response.status}`,
@@ -112,6 +111,7 @@ export function HomeView() {
               }
 
               const data: ApiResponse = await response.json();
+
               return { category, data };
             } catch (error) {
               console.warn(`${category} 데이터 로드 중 오류: ${error}`);
@@ -122,7 +122,6 @@ export function HomeView() {
             }
           }),
         );
-
         const newCategoryData: CategoryDataType = allEndpoints.reduce(
           (acc, endpoint) => ({
             ...acc,
@@ -147,7 +146,6 @@ export function HomeView() {
             newCategoryData[category as Endpoint] = transformedData;
           }
         });
-        console.log(results);
         setCategoryData(newCategoryData);
       } catch (err) {
         console.error('데이터 로딩 중 오류 발생:', err);
