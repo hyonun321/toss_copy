@@ -82,7 +82,7 @@ export function HomeView() {
                 rank: index + 1,
                 stockCode: item.code,
                 stockName: item.name,
-                price: formatPrice(item.price.toString()),
+                price: formatPrice(item.price.toString(), item.exchangeCode),
                 change: formatChange(item.change),
                 changePercentage: formatPercentage(item.changeRate.toString()),
                 isPositiveChange:
