@@ -76,4 +76,4 @@ export const useOnboarding = () => {
     step,
     currentStep: steps[step],
   };
-}; 
+};
