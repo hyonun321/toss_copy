@@ -53,7 +53,7 @@ export function StockListItem({
         .then((isLiked) => setFavorite(isLiked))
         .catch((err) => console.error('좋아요 상태 조회 실패:', err));
     }
-  }, [stockCode]);
+  }, [stockCode, email]);
   const handleFavoriteClick = () => {
     if (!email) {
       alert('로그인이 필요합니다.');
