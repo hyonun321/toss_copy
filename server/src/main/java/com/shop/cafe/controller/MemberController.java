@@ -38,21 +38,22 @@ public class MemberController {
 	@PostMapping("tokenLogin")
 	public Map<String,String> tokenLogin(@RequestBody Member m) {
 		
-		Map<String,String> responseMap=new HashMap<>();
+		Map<String,String> responseMap = new HashMap<>();
 		
 		try {
-			Login loginInfo=memberService.tokenLogin(m);
+			Login loginInfo = memberService.tokenLogin(m);
 			
-			if(loginInfo!=null && loginInfo.getNickname()!=null && loginInfo.getToken()!=null) {
+			if(loginInfo != null && loginInfo.getNickname() != null && loginInfo.getToken() != null) {
 				responseMap.put("nickname", loginInfo.getNickname());
 				responseMap.put("Authorization", loginInfo.getToken());
-			}else {
-				responseMap.put("msg", "다시 로그인 해주세요");
+				responseMap.put("status", "success");
+			} else {
+				responseMap.put("status", "error");
+				responseMap.put("message", "로그인에 실패했습니다.");
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			responseMap.put("msg", "다시 로그인 해주세요");
+			responseMap.put("status", "error");
+			responseMap.put("message", e.getMessage());  // 서비스에서 발생한 상세 에러 메시지를 전달
 		}
 		return responseMap;
 	}
