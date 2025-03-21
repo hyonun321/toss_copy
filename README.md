@@ -8,6 +8,7 @@
 
 </div>
 
+
 <div align="center">
   
 설치 없이, 어디서든 앱 처럼!
@@ -19,7 +20,13 @@
 [소개영상](https://youtu.be/vD-YFp99zmY?si=OYtbVK8jy_c3HrpK)
 
 [팀노션](https://chip-yumberry-7c7.notion.site/1ba94459a69c801594c3c2a5dd06657e?pvs=4)
+
+[피그마](https://www.figma.com/proto/Zpf6U1PgXsYQnZiomc2QSF/%EC%9C%A0%EB%A0%88%EC%B9%B4-3%ED%8C%80-MINI-PROJECT?node-id=132-4914&t=mBdT3P4pwjsJo7Ki-1)
+
+<img width="1280" alt="composible" src="https://github.com/user-attachments/assets/a0f2176e-1d13-4384-bfe6-e66417db5281" />
+
 </div>
+
 
 ---
 
